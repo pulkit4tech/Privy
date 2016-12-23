@@ -23,7 +23,7 @@ Contributing
 ------------
 
 * Fork this repository on GitHub
-* Make your changes and send us a pull request
+* Make your changes and send us a pull request only on **Dev Branch**
 * If we like them we'll merge them
 * If we've accepted a patch, feel free to ask for commit access
 
