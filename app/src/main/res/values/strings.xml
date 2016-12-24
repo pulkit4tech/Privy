@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">Privy</string>
-    <string name="title_activity_privy_maps">Map</string>
+    <string name="title_activity_privy_maps">Nearby Privy\'s</string>
 </resources>
