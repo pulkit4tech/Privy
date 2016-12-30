@@ -29,10 +29,9 @@ Contributing
 
 MADE WITH ❤ BY
 --------------
-[Pulkit Bhatia](https://github.com/pulkit4tech), [Deepak Sahu](https://github.com/dsahudev) and [Ravish Garg](https://github.com/ravishgarg).
-
+[Pulkit Bhatia](https://github.com/pulkit4tech), [Deepak Sahu](https://github.com/dsahudev). 
 License
 -------
 
-Copyright (c) 2016 Pulkit Bhatia, Deepak Sahu, Ravish Garg. Distributed under the Apache-2.0 License. See
+Copyright (c) 2016 Pulkit Bhatia, Deepak Sahu. Distributed under the Apache-2.0 License. See
 LICENSE.txt for further details.
