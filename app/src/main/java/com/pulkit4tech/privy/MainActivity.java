@@ -9,6 +9,7 @@ import android.os.Bundle;
 public class MainActivity extends AppCompatActivity {
 
     private PrivyMapsActivity mapFragement;
+    public static final String DEBUG = "DEBUGGER";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,5 +21,11 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(this,PrivyMapsActivity.class);
             startActivity(intent);
         }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        this.finish();
     }
 }

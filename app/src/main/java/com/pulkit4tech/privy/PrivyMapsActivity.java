@@ -1,7 +1,15 @@
 package com.pulkit4tech.privy;
 
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -9,16 +17,29 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.pulkit4tech.privy.Utilities.LocationServices;
+import com.pulkit4tech.privy.data.LocationData;
+
+import static com.pulkit4tech.privy.MainActivity.DEBUG;
 
 public class PrivyMapsActivity extends ActionBarActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
+    private Context mContext;
+    private Marker myLocationMarker;
+
+    // My Location
+    private LocationData myLocationData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_privy_maps);
+
+        mContext = this;
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.privyMapActivity);
@@ -38,13 +59,68 @@ public class PrivyMapsActivity extends ActionBarActivity implements OnMapReadyCa
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        setUpMapInfo();
+        addMarkers();
+    }
+
+
+    private void addMarkers() {
 
         // Add a test marker in Delhi and move the camera
         LatLng delhi = new LatLng(28.633011, 77.219373);
-        mMap.addMarker(new MarkerOptions().position(delhi).anchor(.5f,.5f).title("Marker in Home"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(delhi,10.0f));
+        mMap.addMarker(new MarkerOptions().position(delhi).anchor(.5f, .5f).title("Marker in Home"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(delhi, 15.0f));
 
         LatLng delhi2 = new LatLng(28.633511, 77.219444);
-        mMap.addMarker(new MarkerOptions().position(delhi2).anchor(.5f,.5f).title("Test Marker in Home2").icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher)));
+        mMap.addMarker(new MarkerOptions().position(delhi2).anchor(.5f, .5f).title("Test Marker in Home2").icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher)));
+
+    }
+
+    private void setUpMapInfo() {
+
+        if(!checkLocationEnabledPermission())
+            return;
+
+
+        getMyCurrentLocation();
+
+    }
+
+    private void getMyCurrentLocation(){
+        mMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
+            @Override
+            public boolean onMyLocationButtonClick() {
+                LocationServices locationService = new LocationServices(mContext);
+                myLocationData = locationService.getCurrentLocation();
+                if(myLocationData!=null) {
+
+                    // checking for previous marker and if present, replacing it with new marker
+                    if(myLocationMarker!=null){
+                        myLocationMarker.remove();
+                    }
+
+                    myLocationMarker = mMap.addMarker(new MarkerOptions().position(myLocationData.getLatLng()).title("My Location"));
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocationData.getLatLng(), 15.0f));
+                    Log.d(DEBUG, myLocationData.getLatLng().toString());
+                }
+                return true;
+            }
+        });
+    }
+
+    private boolean checkLocationEnabledPermission() {
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+
+            return false;
+        }
+        mMap.setMyLocationEnabled(true);
+        return true;
     }
 }
