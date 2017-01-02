@@ -1,5 +1,6 @@
 # Privy : The Toilet Finder 
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/397a3c2bd51140dcbe12ef5175e62b6e)](https://www.codacy.com?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=pulkit4tech/Privy&amp;utm_campaign=Badge_Grade)
 ### Description
 
 //TODO
