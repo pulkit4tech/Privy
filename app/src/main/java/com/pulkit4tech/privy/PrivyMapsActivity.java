@@ -2,20 +2,19 @@ package com.pulkit4tech.privy;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.location.Criteria;
-import android.location.Location;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -29,6 +28,8 @@ public class PrivyMapsActivity extends ActionBarActivity implements OnMapReadyCa
     private GoogleMap mMap;
     private Context mContext;
     private Marker myLocationMarker;
+    private CameraPosition MY_LOCATION_CAMERA_POS;
+    private static final int CAMERA_ANIMATION_DURATION = 2500;
 
     // My Location
     private LocationData myLocationData;
@@ -99,13 +100,40 @@ public class PrivyMapsActivity extends ActionBarActivity implements OnMapReadyCa
                         myLocationMarker.remove();
                     }
 
+                    MY_LOCATION_CAMERA_POS = new CameraPosition.Builder()
+                            .target(myLocationData.getLatLng())
+                            .zoom(15.0f)
+                            .bearing(0)
+                            .tilt(25)
+                            .build();
+
                     myLocationMarker = mMap.addMarker(new MarkerOptions().position(myLocationData.getLatLng()).title("My Location"));
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocationData.getLatLng(), 15.0f));
+
+                    //animate camera
+                    onGoToMyLocation();
                     Log.d(DEBUG, myLocationData.getLatLng().toString());
                 }
                 return true;
             }
         });
+    }
+
+    private void onGoToMyLocation() {
+        changeCamera(CameraUpdateFactory.newCameraPosition(MY_LOCATION_CAMERA_POS), new GoogleMap.CancelableCallback() {
+            @Override
+            public void onFinish() {
+                Toast.makeText(mContext,"Animation Finished",Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onCancel() {
+                Toast.makeText(mContext,"Animation Canceled",Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void changeCamera(CameraUpdate update, GoogleMap.CancelableCallback callback){
+        mMap.animateCamera(update,CAMERA_ANIMATION_DURATION,callback);
     }
 
     private boolean checkLocationEnabledPermission() {

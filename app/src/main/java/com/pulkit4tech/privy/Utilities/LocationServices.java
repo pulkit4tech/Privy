@@ -9,7 +9,6 @@ import android.location.LocationManager;
 import android.location.LocationListener;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
-import android.util.Log;
 import android.widget.Toast;
 
 
@@ -18,11 +17,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.pulkit4tech.privy.data.LocationData;
 
 import static android.content.Context.LOCATION_SERVICE;
-import static com.pulkit4tech.privy.MainActivity.DEBUG;
-
-/**
- * Created by pulkit on 01/01/17.
- */
 
 public class LocationServices implements LocationListener {
 
