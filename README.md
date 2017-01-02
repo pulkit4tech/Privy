@@ -33,5 +33,5 @@ MADE WITH ❤ BY
 License
 -------
 
-Copyright (c) 2016 Pulkit Bhatia, Deepak Sahu. Distributed under the Apache-2.0 License. See
+Copyright (c) 2016 - 2017 Pulkit Bhatia, Deepak Sahu. Distributed under the Apache-2.0 License. See
 LICENSE.txt for further details.
