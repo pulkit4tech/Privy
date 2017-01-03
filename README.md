@@ -20,10 +20,12 @@
 - [ ] Feature Extension 
 - [ ] other ...
 
-Contributing
-------------
+Contributing Guidelines
+-----------------------
 
 * Fork this repository on GitHub
+* Commit Message should follow this pattern : "#{issue no} : Commit message"
+* squash your commits (if more than one commits for single issue)
 * Make your changes and send us a pull request only on **Dev Branch**
 * If we like them we'll merge them
 * If we've accepted a patch, feel free to ask for commit access
