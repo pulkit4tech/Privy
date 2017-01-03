@@ -1,8 +1,10 @@
 package com.pulkit4tech.privy;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -18,10 +20,12 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.pulkit4tech.privy.Utilities.LocationServices;
 import com.pulkit4tech.privy.data.LocationData;
+import com.pulkit4tech.privy.utilities.LocationServices;
 
-import static com.pulkit4tech.privy.MainActivity.DEBUG;
+import static com.pulkit4tech.privy.constants.Constants.DEBUG;
+import static com.pulkit4tech.privy.constants.Constants.CAMERA_ANIMATION_DURATION;
+import static com.pulkit4tech.privy.constants.Constants.MY_PERMISSIONS_REQUEST_FINE_LOCATIONS;
 
 public class PrivyMapsActivity extends ActionBarActivity implements OnMapReadyCallback {
 
@@ -29,7 +33,6 @@ public class PrivyMapsActivity extends ActionBarActivity implements OnMapReadyCa
     private Context mContext;
     private Marker myLocationMarker;
     private CameraPosition MY_LOCATION_CAMERA_POS;
-    private static final int CAMERA_ANIMATION_DURATION = 2500;
 
     // My Location
     private LocationData myLocationData;
@@ -79,12 +82,17 @@ public class PrivyMapsActivity extends ActionBarActivity implements OnMapReadyCa
 
     private void setUpMapInfo() {
 
-        if(!checkLocationEnabledPermission())
-            return;
+        if(!checkLocationEnabledPermission()){
+            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION},MY_PERMISSIONS_REQUEST_FINE_LOCATIONS);
+        }else {
+            setUpMyLocationMarker();
+        }
 
+    }
 
+    private void setUpMyLocationMarker() {
+        mMap.setMyLocationEnabled(true);
         getMyCurrentLocation();
-
     }
 
     private void getMyCurrentLocation(){
@@ -137,18 +145,25 @@ public class PrivyMapsActivity extends ActionBarActivity implements OnMapReadyCa
     }
 
     private boolean checkLocationEnabledPermission() {
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
+        return ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+    }
 
-            return false;
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        switch (requestCode){
+            case MY_PERMISSIONS_REQUEST_FINE_LOCATIONS:
+                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    setUpMyLocationMarker();
+                }
+                else {
+                    Toast.makeText(mContext,"Please give permission for location",Toast.LENGTH_SHORT).show();
+                }
+            break;
+
+            default:
+                Log.d(DEBUG,"Some other request code: " + requestCode);
         }
-        mMap.setMyLocationEnabled(true);
-        return true;
     }
 }
