@@ -15,13 +15,13 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.pulkit4tech.privy.data.LocationData;
 import com.pulkit4tech.privy.utilities.LocationServices;
+import com.pulkit4tech.privy.utilities.RequestData;
 
 import static com.pulkit4tech.privy.constants.Constants.DEBUG;
 import static com.pulkit4tech.privy.constants.Constants.CAMERA_ANIMATION_DURATION;
@@ -64,19 +64,26 @@ public class PrivyMapsActivity extends ActionBarActivity implements OnMapReadyCa
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         setUpMapInfo();
-        addMarkers();
     }
 
 
     private void addMarkers() {
 
-        // Add a test marker in Delhi and move the camera
-        LatLng delhi = new LatLng(28.633011, 77.219373);
-        mMap.addMarker(new MarkerOptions().position(delhi).anchor(.5f, .5f).title("Marker in Home"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(delhi, 15.0f));
+        if(myLocationData == null) {
+            LocationServices locationService = new LocationServices(mContext);
+            myLocationData = locationService.getCurrentLocation();
+        }
 
-        LatLng delhi2 = new LatLng(28.633511, 77.219444);
-        mMap.addMarker(new MarkerOptions().position(delhi2).anchor(.5f, .5f).title("Test Marker in Home2").icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher)));
+        if(myLocationData!=null)
+        markNearbyPrivys(myLocationData.getLatLng());
+
+        // Add a test marker in Delhi and move the camera
+//        LatLng delhi = new LatLng(28.633011, 77.219373);
+//        mMap.addMarker(new MarkerOptions().position(delhi).anchor(.5f, .5f).title("Marker in Home"));
+//        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(delhi, 15.0f));
+//
+//        LatLng delhi2 = new LatLng(28.633511, 77.219444);
+//        mMap.addMarker(new MarkerOptions().position(delhi2).anchor(.5f, .5f).title("Test Marker in Home2").icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher)));
 
     }
 
@@ -87,46 +94,48 @@ public class PrivyMapsActivity extends ActionBarActivity implements OnMapReadyCa
         }else {
             setUpMyLocationMarker();
         }
-
     }
 
     private void setUpMyLocationMarker() {
         mMap.setMyLocationEnabled(true);
+        mMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
+            @Override
+            public boolean onMyLocationButtonClick() {
+                getMyCurrentLocation();
+                return true;
+            }
+        });
         getMyCurrentLocation();
     }
 
     private void getMyCurrentLocation(){
-        mMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
-            @Override
-            public boolean onMyLocationButtonClick() {
-                LocationServices locationService = new LocationServices(mContext);
-                myLocationData = locationService.getCurrentLocation();
-                if(myLocationData!=null) {
+        LocationServices locationService = new LocationServices(mContext);
+        myLocationData = locationService.getCurrentLocation();
+        if(myLocationData!=null) {
 
-                    // checking for previous marker and if present, replacing it with new marker
-                    if(myLocationMarker!=null){
-                        myLocationMarker.remove();
-                    }
-
-                    MY_LOCATION_CAMERA_POS = new CameraPosition.Builder()
-                            .target(myLocationData.getLatLng())
-                            .zoom(15.0f)
-                            .bearing(0)
-                            .tilt(25)
-                            .build();
-
-                    myLocationMarker = mMap.addMarker(new MarkerOptions().position(myLocationData.getLatLng()).title("My Location"));
-
-                    //animate camera
-                    onGoToMyLocation();
-                    Log.d(DEBUG, myLocationData.getLatLng().toString());
-                }
-                return true;
+            // checking for previous marker and if present, replacing it with new marker
+            if (myLocationMarker != null) {
+                myLocationMarker.remove();
             }
-        });
+
+            MY_LOCATION_CAMERA_POS = new CameraPosition.Builder()
+                    .target(myLocationData.getLatLng())
+                    .zoom(15.0f)
+                    .bearing(0)
+                    .tilt(25)
+                    .build();
+
+            myLocationMarker = mMap.addMarker(new MarkerOptions().position(myLocationData.getLatLng()).title("My Location"));
+
+            //animate camera
+            moveCameraToMyLocation();
+            addMarkers();
+
+            Log.d(DEBUG, myLocationData.getLatLng().toString());
+        }
     }
 
-    private void onGoToMyLocation() {
+    private void moveCameraToMyLocation() {
         changeCamera(CameraUpdateFactory.newCameraPosition(MY_LOCATION_CAMERA_POS), new GoogleMap.CancelableCallback() {
             @Override
             public void onFinish() {
@@ -138,6 +147,7 @@ public class PrivyMapsActivity extends ActionBarActivity implements OnMapReadyCa
                 Toast.makeText(mContext,"Animation Canceled",Toast.LENGTH_SHORT).show();
             }
         });
+
     }
 
     private void changeCamera(CameraUpdate update, GoogleMap.CancelableCallback callback){
@@ -165,5 +175,9 @@ public class PrivyMapsActivity extends ActionBarActivity implements OnMapReadyCa
             default:
                 Log.d(DEBUG,"Some other request code: " + requestCode);
         }
+    }
+
+    private void markNearbyPrivys(LatLng myLocation){
+       new RequestData(mContext,mMap,myLocation).getMarkerData();
     }
 }
