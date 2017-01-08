@@ -17,11 +17,12 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.pulkit4tech.privy.data.LocationData;
+import com.pulkit4tech.privy.data.json.MarkerData;
 import com.pulkit4tech.privy.utilities.LocationServices;
 import com.pulkit4tech.privy.utilities.RequestData;
+
+import java.util.HashMap;
 
 import static com.pulkit4tech.privy.constants.Constants.DEBUG;
 import static com.pulkit4tech.privy.constants.Constants.CAMERA_ANIMATION_DURATION;
@@ -31,10 +32,10 @@ public class PrivyMapsActivity extends ActionBarActivity implements OnMapReadyCa
 
     private GoogleMap mMap;
     private Context mContext;
-    private Marker myLocationMarker;
     private CameraPosition MY_LOCATION_CAMERA_POS;
+    private HashMap<Integer,MarkerData> universalMarkers;
 
-    // My Location
+    // My location
     private LocationData myLocationData;
 
     @Override
@@ -113,19 +114,12 @@ public class PrivyMapsActivity extends ActionBarActivity implements OnMapReadyCa
         myLocationData = locationService.getCurrentLocation();
         if(myLocationData!=null) {
 
-            // checking for previous marker and if present, replacing it with new marker
-            if (myLocationMarker != null) {
-                myLocationMarker.remove();
-            }
-
             MY_LOCATION_CAMERA_POS = new CameraPosition.Builder()
                     .target(myLocationData.getLatLng())
                     .zoom(15.0f)
                     .bearing(0)
                     .tilt(25)
                     .build();
-
-            myLocationMarker = mMap.addMarker(new MarkerOptions().position(myLocationData.getLatLng()).title("My Location"));
 
             //animate camera
             moveCameraToMyLocation();
@@ -178,6 +172,7 @@ public class PrivyMapsActivity extends ActionBarActivity implements OnMapReadyCa
     }
 
     private void markNearbyPrivys(LatLng myLocation){
-       new RequestData(mContext,mMap,myLocation).getMarkerData();
+        universalMarkers = new HashMap<>();
+        new RequestData(mContext,mMap,universalMarkers,myLocation).getMarkerData();
     }
 }
