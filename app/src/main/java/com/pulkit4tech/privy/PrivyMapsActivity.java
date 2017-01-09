@@ -33,7 +33,7 @@ public class PrivyMapsActivity extends ActionBarActivity implements OnMapReadyCa
     private GoogleMap mMap;
     private Context mContext;
     private CameraPosition MY_LOCATION_CAMERA_POS;
-    private HashMap<Integer,MarkerData> universalMarkers;
+    private HashMap<String,MarkerData> universalMarkers;
 
     // My location
     private LocationData myLocationData;
@@ -44,6 +44,7 @@ public class PrivyMapsActivity extends ActionBarActivity implements OnMapReadyCa
         setContentView(R.layout.activity_privy_maps);
 
         mContext = this;
+        universalMarkers = new HashMap<>();
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -172,7 +173,6 @@ public class PrivyMapsActivity extends ActionBarActivity implements OnMapReadyCa
     }
 
     private void markNearbyPrivys(LatLng myLocation){
-        universalMarkers = new HashMap<>();
         new RequestData(mContext,mMap,universalMarkers,myLocation).getMarkerData();
     }
 }
