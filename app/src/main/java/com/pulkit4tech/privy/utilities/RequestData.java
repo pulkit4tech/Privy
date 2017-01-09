@@ -12,6 +12,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -43,9 +45,9 @@ public class RequestData {
     private String PLACE = "place";
     private String NEARBY = "nearbysearch";
     private String TYPE = "json";
-    private HashMap<Integer, MarkerData> hm;
+    private HashMap<String, MarkerData> hm;
 
-    public RequestData(Context mContext, GoogleMap mMap, HashMap<Integer, MarkerData> universalMarkerHashMap, LatLng myLocation) {
+    public RequestData(Context mContext, GoogleMap mMap, HashMap<String, MarkerData> universalMarkerHashMap, LatLng myLocation) {
         this.myLocation = myLocation;
         this.mContext = mContext;
         this.mMap = mMap;
@@ -84,16 +86,17 @@ public class RequestData {
     private void addMarkers(PrivyPost post) {
         for (MarkerData data : post.getResults()) {
             Log.d(DEBUG, data.toString());
-            Marker temp = mMap.addMarker(new MarkerOptions().position(new LatLng(data.getGeometry().getLocation().getLat(), data.getGeometry().getLocation().getLng())).title(data.getName()));
-            hm.put(temp.hashCode(), data);
+            BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE);
+            Marker temp = mMap.addMarker(new MarkerOptions().position(new LatLng(data.getGeometry().getLocation().getLat(), data.getGeometry().getLocation().getLng())).title(data.getName()).icon(bitmapDescriptor));
+            hm.put(temp.getId(), data);
         }
 
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
                 //testing
-                if (hm.containsKey(marker.hashCode()))
-                    Toast.makeText(mContext, hm.get(marker.hashCode()).getName(), Toast.LENGTH_SHORT).show();
+                if (hm.containsKey(marker.getId()))
+                    makeToast(mContext, hm.get(marker.getId()).getName());
                 else
                     marker.remove();
                 return false;
