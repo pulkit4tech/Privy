@@ -32,9 +32,9 @@ Contributing Guidelines
 
 MADE WITH ❤ BY
 --------------
-[Pulkit Bhatia](https://github.com/pulkit4tech), [Deepak Sahu](https://github.com/dsahudev). 
+[Pulkit Bhatia](https://github.com/pulkit4tech)
 License
 -------
 
-Copyright (c) 2016 - 2017 Pulkit Bhatia, Deepak Sahu. Distributed under the Apache-2.0 License. See
+Copyright (c) 2016 - 2017 Pulkit Bhatia. Distributed under the Apache-2.0 License. See
 LICENSE.txt for further details.
