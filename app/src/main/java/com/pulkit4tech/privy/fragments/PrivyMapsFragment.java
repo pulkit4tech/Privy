@@ -1,13 +1,16 @@
-package com.pulkit4tech.privy;
+package com.pulkit4tech.privy.fragments;
 
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdate;
@@ -17,6 +20,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.pulkit4tech.privy.R;
 import com.pulkit4tech.privy.data.LocationData;
 import com.pulkit4tech.privy.data.json.MarkerData;
 import com.pulkit4tech.privy.utilities.LocationServices;
@@ -28,30 +32,32 @@ import static com.pulkit4tech.privy.constants.Constants.DEBUG;
 import static com.pulkit4tech.privy.constants.Constants.CAMERA_ANIMATION_DURATION;
 import static com.pulkit4tech.privy.constants.Constants.MY_PERMISSIONS_REQUEST_FINE_LOCATIONS;
 
-public class PrivyMapsActivity extends ActionBarActivity implements OnMapReadyCallback {
+public class PrivyMapsFragment extends Fragment implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     private Context mContext;
     private CameraPosition MY_LOCATION_CAMERA_POS;
-    private HashMap<String,MarkerData> universalMarkers;
+    private HashMap<String, MarkerData> universalMarkers;
 
     // My location
     private LocationData myLocationData;
 
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_privy_maps);
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        mContext = this;
+        super.onCreate(savedInstanceState);
+        View mView = inflater.inflate(R.layout.activity_privy_maps, container, false);
+        mContext = getActivity();
         universalMarkers = new HashMap<>();
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
                 .findFragmentById(R.id.privyMapActivity);
+        //if (mapFragment!=null)
         mapFragment.getMapAsync(this);
+        return mView;
     }
-
 
     /**
      * Manipulates the map once available.
@@ -71,13 +77,13 @@ public class PrivyMapsActivity extends ActionBarActivity implements OnMapReadyCa
 
     private void addMarkers() {
 
-        if(myLocationData == null) {
+        if (myLocationData == null) {
             LocationServices locationService = new LocationServices(mContext);
             myLocationData = locationService.getCurrentLocation();
         }
 
-        if(myLocationData!=null)
-        markNearbyPrivys(myLocationData.getLatLng());
+        if (myLocationData != null)
+            markNearbyPrivys(myLocationData.getLatLng());
 
         // Add a test marker in Delhi and move the camera
 //        LatLng delhi = new LatLng(28.633011, 77.219373);
@@ -91,15 +97,15 @@ public class PrivyMapsActivity extends ActionBarActivity implements OnMapReadyCa
 
     private void setUpMapInfo() {
 
-        if(!checkLocationEnabledPermission()){
-            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION},MY_PERMISSIONS_REQUEST_FINE_LOCATIONS);
-        }else {
+        if (!checkLocationEnabledPermission()) {
+            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_REQUEST_FINE_LOCATIONS);
+        } else {
+            mMap.setMyLocationEnabled(true);
             setUpMyLocationMarker();
         }
     }
 
     private void setUpMyLocationMarker() {
-        mMap.setMyLocationEnabled(true);
         mMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
             @Override
             public boolean onMyLocationButtonClick() {
@@ -110,10 +116,10 @@ public class PrivyMapsActivity extends ActionBarActivity implements OnMapReadyCa
         getMyCurrentLocation();
     }
 
-    private void getMyCurrentLocation(){
+    private void getMyCurrentLocation() {
         LocationServices locationService = new LocationServices(mContext);
         myLocationData = locationService.getCurrentLocation();
-        if(myLocationData!=null) {
+        if (myLocationData != null) {
 
             MY_LOCATION_CAMERA_POS = new CameraPosition.Builder()
                     .target(myLocationData.getLatLng())
@@ -134,45 +140,26 @@ public class PrivyMapsActivity extends ActionBarActivity implements OnMapReadyCa
         changeCamera(CameraUpdateFactory.newCameraPosition(MY_LOCATION_CAMERA_POS), new GoogleMap.CancelableCallback() {
             @Override
             public void onFinish() {
-                Toast.makeText(mContext,"Animation Finished",Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, "Animation Finished", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onCancel() {
-                Toast.makeText(mContext,"Animation Canceled",Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, "Animation Canceled", Toast.LENGTH_SHORT).show();
             }
         });
 
     }
 
-    private void changeCamera(CameraUpdate update, GoogleMap.CancelableCallback callback){
-        mMap.animateCamera(update,CAMERA_ANIMATION_DURATION,callback);
+    private void changeCamera(CameraUpdate update, GoogleMap.CancelableCallback callback) {
+        mMap.animateCamera(update, CAMERA_ANIMATION_DURATION, callback);
     }
 
     private boolean checkLocationEnabledPermission() {
-        return ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+        return ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        switch (requestCode){
-            case MY_PERMISSIONS_REQUEST_FINE_LOCATIONS:
-                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                    setUpMyLocationMarker();
-                }
-                else {
-                    Toast.makeText(mContext,"Please give permission for location",Toast.LENGTH_SHORT).show();
-                }
-            break;
-
-            default:
-                Log.d(DEBUG,"Some other request code: " + requestCode);
-        }
-    }
-
-    private void markNearbyPrivys(LatLng myLocation){
-        new RequestData(mContext,mMap,universalMarkers,myLocation).getMarkerData();
+    private void markNearbyPrivys(LatLng myLocation) {
+        new RequestData(mContext, mMap, universalMarkers, myLocation).getMarkerData();
     }
 }

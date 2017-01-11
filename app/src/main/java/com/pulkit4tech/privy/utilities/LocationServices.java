@@ -77,6 +77,6 @@ public class LocationServices implements LocationListener {
 
     @Override
     public void onProviderDisabled(String s) {
-        Toast.makeText(mContext,"Provider Disabled",Toast.LENGTH_SHORT).show();
+        Toast.makeText(mContext, "Provider Disabled", Toast.LENGTH_SHORT).show();
     }
 }
