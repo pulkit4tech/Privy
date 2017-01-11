@@ -6,4 +6,7 @@
     <string name="error_retrieving_data_msg">Some error while retrieving data!!</string>
     <string name="no_result_msg">Sorry No privy\'s found. Please help community and add one</string>
     <string name="network_error">Sorry!! Network Error..</string>
+    <string name="navigation_drawer_open">Open Navigation Drawer</string>
+    <string name="navigation_drawer_close">Close Navigation Drawer</string>
+    <string name="action_settings">Settings</string>
 </resources>
