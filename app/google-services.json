@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "203008384222",
+    "project_id": "privy-154513"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:203008384222:android:ae185500677abe13",
+        "android_client_info": {
+          "package_name": "com.pulkit4tech.privy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "203008384222-oh1nnkreep3i88nbsj72be32ujmr56qs.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.pulkit4tech.privy",
+            "certificate_hash": "DDCEF282F60C4E45E0FC7D575AA76E6D9C214000"
+          }
+        },
+        {
+          "client_id": "203008384222-5fvdfg6mt939sb650t6ukcde442jmrnl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBcvpPGh9Ba9sOEg1YCyhA6dZ-plgePfeI"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
