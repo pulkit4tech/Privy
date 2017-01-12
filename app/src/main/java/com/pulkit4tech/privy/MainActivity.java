@@ -1,7 +1,9 @@
 package com.pulkit4tech.privy;
 
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -17,16 +19,25 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Toast;
 
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlacePicker;
+import com.pulkit4tech.privy.data.json.Location;
+import com.pulkit4tech.privy.data.json.PostPrivyRequest;
 import com.pulkit4tech.privy.fragments.PrivyMapsFragment;
+import com.pulkit4tech.privy.utilities.NetworkRequest;
 import com.pulkit4tech.privy.utilities.NoLocationPermission;
+
+import java.util.ArrayList;
 
 import static com.pulkit4tech.privy.constants.Constants.DEBUG;
 import static com.pulkit4tech.privy.constants.Constants.MY_PERMISSIONS_REQUEST_FINE_LOCATIONS;
+import static com.pulkit4tech.privy.constants.Constants.PLACE_PICKER_REQUEST;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+
+    private NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,13 +59,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+//        fab.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//               Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null);
+//            }
+//        });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -62,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.getMenu().getItem(0).setChecked(true);
         loadMapFragment();
@@ -80,11 +91,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         switch (requestCode) {
             case MY_PERMISSIONS_REQUEST_FINE_LOCATIONS:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(this, "Permission granted!!", Toast.LENGTH_SHORT).show();
-                    loadFragment(new PrivyMapsFragment());
+                    snackMsg("Permission granted!!");
                 } else {
                     loadFragment(new NoLocationPermission());
-                    Toast.makeText(this, "Please give permission for location", Toast.LENGTH_SHORT).show();
+                    snackMsg("Please give permission for location");
                 }
                 break;
 
@@ -94,7 +104,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void loadFragment(Fragment fragment) {
-        getSupportFragmentManager().beginTransaction().add(R.id.frame_container, fragment).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).commit();
+        getSupportFragmentManager().beginTransaction().add(R.id.frame_container, fragment, fragment.getClass().getName()).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).commit();
     }
 
     @Override
@@ -137,12 +147,58 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         if (id == R.id.nav_nearby_privy) {
             loadMapFragment();
+        } else if (id == R.id.nav_request_new) {
+            loadAddNewPrivyActivity();
         }
         //TODO : Add other conditions
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == PLACE_PICKER_REQUEST) {
+            if (resultCode == RESULT_OK) {
+                Place placeToAdd = PlacePicker.getPlace(data, this);
+                if (placeToAdd.getLatLng() != null) {
+                    requestNewPrivy(placeToAdd);
+                } else {
+                    snackMsg("Some Error!! Was not able to retrieve information properly");
+                }
+            } else {
+                snackMsg("Please Select a Location if you wished to request Privy!");
+            }
+
+            navigationView.getMenu().getItem(0).setChecked(true);
+            loadMapFragment();
+        }
+    }
+
+    private void requestNewPrivy(Place placeToAdd) {
+        PostPrivyRequest postdata = new PostPrivyRequest();
+        Location loc = new Location();
+        loc.setLat(placeToAdd.getLatLng().latitude);
+        loc.setLng(placeToAdd.getLatLng().longitude);
+        postdata.setLocation(loc);
+        postdata.setAccuracy(50);
+        postdata.setName("Public Toilet");
+        postdata.setAddress(placeToAdd.getAddress().toString());
+        ArrayList<String> types = new ArrayList<String>();
+        types.add("establishment");
+        postdata.setTypes(types);
+        postdata.setLanguage("en");
+        new NetworkRequest(this, postdata).postRequest();
+    }
+
+    private void loadAddNewPrivyActivity() {
+        PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+        try {
+            startActivityForResult(builder.build(this), PLACE_PICKER_REQUEST);
+        } catch (Exception e) {
+            Log.d(DEBUG, e.toString());
+        }
     }
 
     private void loadMapFragment() {
@@ -152,6 +208,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             loadFragment(new PrivyMapsFragment());
         }
     }
+
+    public void snackMsg(String msg) {
+        Snackbar.make((CoordinatorLayout) findViewById(R.id.coordinator_layout), msg, Snackbar.LENGTH_LONG).show();
+    }
+
+//    private void toastMsg(String msg) {
+//        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+//    }
 
     private boolean checkLocationEnabledPermission() {
         return ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;

@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -24,7 +26,7 @@ import com.pulkit4tech.privy.R;
 import com.pulkit4tech.privy.data.LocationData;
 import com.pulkit4tech.privy.data.json.MarkerData;
 import com.pulkit4tech.privy.utilities.LocationServices;
-import com.pulkit4tech.privy.utilities.RequestData;
+import com.pulkit4tech.privy.utilities.NetworkRequest;
 
 import java.util.HashMap;
 
@@ -140,7 +142,7 @@ public class PrivyMapsFragment extends Fragment implements OnMapReadyCallback {
         changeCamera(CameraUpdateFactory.newCameraPosition(MY_LOCATION_CAMERA_POS), new GoogleMap.CancelableCallback() {
             @Override
             public void onFinish() {
-                Toast.makeText(mContext, "Animation Finished", Toast.LENGTH_SHORT).show();
+                snackMsg("Animation Finished");
             }
 
             @Override
@@ -160,6 +162,10 @@ public class PrivyMapsFragment extends Fragment implements OnMapReadyCallback {
     }
 
     private void markNearbyPrivys(LatLng myLocation) {
-        new RequestData(mContext, mMap, universalMarkers, myLocation).getMarkerData();
+        new NetworkRequest(mContext, mMap, universalMarkers, myLocation).getMarkerData();
+    }
+
+    public void snackMsg(String msg) {
+        Snackbar.make((CoordinatorLayout) getActivity().findViewById(R.id.coordinator_layout), msg, Snackbar.LENGTH_LONG).show();
     }
 }
