@@ -10,14 +10,14 @@
             android:id="@+id/nav_request_new"
             android:icon="@drawable/ic_menu_gallery"
             android:title="Add Privy" />
+        <!--<item-->
+            <!--android:id="@+id/nav_slideshow"-->
+            <!--android:icon="@drawable/ic_menu_slideshow"-->
+            <!--android:title="Slideshow" />-->
         <item
-            android:id="@+id/nav_slideshow"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="Slideshow" />
-        <item
-            android:id="@+id/nav_manage"
+            android:id="@+id/nav_sign_in_up"
             android:icon="@drawable/ic_menu_manage"
-            android:title="Tools" />
+            android:title="Sign In" />
     </group>
 
     <item android:title="Communicate">

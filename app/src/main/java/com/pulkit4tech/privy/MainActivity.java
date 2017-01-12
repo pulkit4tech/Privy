@@ -1,6 +1,8 @@
 package com.pulkit4tech.privy;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
@@ -19,8 +21,17 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
+import android.view.View;
+import android.widget.TextView;
 
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
 import com.pulkit4tech.privy.data.json.Location;
@@ -32,17 +43,31 @@ import com.pulkit4tech.privy.utilities.NoLocationPermission;
 import java.util.ArrayList;
 
 import static com.pulkit4tech.privy.constants.Constants.DEBUG;
+import static com.pulkit4tech.privy.constants.Constants.LOG_PREF;
 import static com.pulkit4tech.privy.constants.Constants.MY_PERMISSIONS_REQUEST_FINE_LOCATIONS;
 import static com.pulkit4tech.privy.constants.Constants.PLACE_PICKER_REQUEST;
+import static com.pulkit4tech.privy.constants.Constants.RC_SIGN_IN;
+import static com.pulkit4tech.privy.constants.Constants.RC_SIGN_IN_NEW_PRIVY_REQUEST;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, GoogleApiClient.OnConnectionFailedListener {
 
     private NavigationView navigationView;
+    private GoogleApiClient mGoogleApiClient;
+    private Context mContext;
+    private FloatingActionButton fab;
+    private SharedPreferences mSharedPreferences;
+    private String NAME = "user_name";
+    private String EMAIL = "email_id";
+    private String LOGGED_IN = "logged_in";
+    //  private ImageView profileImg;
+    private TextView userName, emailId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mContext = this;
+        mSharedPreferences = getSharedPreferences(LOG_PREF, MODE_PRIVATE);
 
         if (savedInstanceState == null) {
             setUpInfo();
@@ -55,28 +80,96 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void setUpInfo() {
+        setGoogleApiClientInfo();
+        setUpFab();
+        setUpNavigationDrawer();
+
+        if (checkIfLoggedIn()) {
+            fab.hide();
+        }
+
+        navigationView.getMenu().getItem(0).setChecked(true);
+        loadMapFragment();
+    }
+
+    private void setUpNavigationDrawer() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//               Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null);
-//            }
-//        });
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
-
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        navigationView.getMenu().getItem(0).setChecked(true);
-        loadMapFragment();
+        setUpNavigationHeader();
+    }
+
+    private void setUpNavigationHeader() {
+        View nav_head = navigationView.getHeaderView(0);
+//      profileImg = (ImageView) nav_head.findViewById(R.id.profile_pic);
+        userName = (TextView) nav_head.findViewById(R.id.user_name);
+        emailId = (TextView) nav_head.findViewById(R.id.email_id);
+
+        setUpNavigationHeaderValue();
+    }
+
+    private void setUpNavigationHeaderValue() {
+        // TODO : Set Profile Image
+        userName.setText(mSharedPreferences.getString(NAME, getResources().getString(R.string.sign_in)));
+        emailId.setText(mSharedPreferences.getString(EMAIL, ""));
+    }
+
+    private void setUpFab() {
+        fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startGoogleSignInActivity(RC_SIGN_IN);
+            }
+        });
+    }
+
+    private void startGoogleSignInActivity(int resultcode) {
+        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+        startActivityForResult(signInIntent, resultcode);
+    }
+
+    private void signOut() {
+        clearSharedPreference();
+        setUpNavigationHeaderValue();
+
+        Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(new ResultCallback<Status>() {
+            @Override
+            public void onResult(@NonNull Status status) {
+                if (status.isSuccess()) {
+                    snackMsg("Signed Out!!");
+                } else {
+                    snackMsg("Some error while signing out!");
+                    Log.d(DEBUG, "Sign out error : " + status.toString());
+                }
+            }
+        });
+    }
+
+    private boolean checkIfLoggedIn() {
+        return mSharedPreferences.getBoolean(LOGGED_IN, false);
+    }
+
+    private void setGoogleApiClientInfo() {
+
+        // Testing Google Sign in
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .requestProfile()
+                .build();
+
+        // Build a GoogleApiClient with access to the Google Sign-In API and the
+        // options specified by gso.
+        mGoogleApiClient = new GoogleApiClient.Builder(mContext)
+                .enableAutoManage(this, this)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .build();
     }
 
     @Override
@@ -91,6 +184,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         switch (requestCode) {
             case MY_PERMISSIONS_REQUEST_FINE_LOCATIONS:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    loadMapFragment();
                     snackMsg("Permission granted!!");
                 } else {
                     loadFragment(new NoLocationPermission());
@@ -147,14 +241,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         if (id == R.id.nav_nearby_privy) {
             loadMapFragment();
+            closeDrawer();
         } else if (id == R.id.nav_request_new) {
             loadAddNewPrivyActivity();
+            closeDrawer();
+        } else if (id == R.id.nav_sign_in_up) {
+            if (checkIfLoggedIn())
+                signOut();
+            else
+                startGoogleSignInActivity(RC_SIGN_IN);
         }
         //TODO : Add other conditions
+        return true;
+    }
 
+    private void closeDrawer() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
-        return true;
     }
 
     @Override
@@ -174,6 +277,64 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             navigationView.getMenu().getItem(0).setChecked(true);
             loadMapFragment();
         }
+
+        // Google Sign in Callback
+        if (requestCode == RC_SIGN_IN) {
+            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+            handleSignInResult(result);
+        }
+
+        if (requestCode == RC_SIGN_IN_NEW_PRIVY_REQUEST) {
+            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+            handleSignInResultAndLaunchNewRequestPrivy(result);
+        }
+    }
+
+    private void handleSignInResultAndLaunchNewRequestPrivy(GoogleSignInResult result) {
+        if (result.isSuccess()) {
+            // Signed in successfully, show authenticated UI.
+            GoogleSignInAccount acct = result.getSignInAccount();
+            addLoginInfo(acct);
+
+            //Launch NewRequestPrivy
+            loadAddNewPrivyActivity();
+
+            // Hide Fab button
+            fab.hide();
+        } else {
+            clearSharedPreference();
+            snackMsg("Please Sign in to request new Privy");
+        }
+        setUpNavigationHeaderValue();
+    }
+
+    private void handleSignInResult(GoogleSignInResult result) {
+        Log.d(DEBUG, "handleSignInResult:" + result.isSuccess());
+        if (result.isSuccess()) {
+            // Signed in successfully, show authenticated UI.
+            GoogleSignInAccount acct = result.getSignInAccount();
+            addLoginInfo(acct);
+            // Hide Fab button
+            fab.hide();
+        } else {
+            clearSharedPreference();
+            snackMsg("Please Sign in to request new Privy");
+        }
+        setUpNavigationHeaderValue();
+    }
+
+    private void addLoginInfo(GoogleSignInAccount acct) {
+        // TODO : add Profile Picture
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putBoolean(LOGGED_IN, true);
+        editor.putString(NAME, acct.getDisplayName());
+        editor.putString(EMAIL, acct.getEmail());
+        editor.commit();
+    }
+
+    private void clearSharedPreference() {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.clear().commit();
     }
 
     private void requestNewPrivy(Place placeToAdd) {
@@ -188,16 +349,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         ArrayList<String> types = new ArrayList<String>();
         types.add("establishment");
         postdata.setTypes(types);
+        postdata.setAddress(mSharedPreferences.getString(EMAIL, ""));
         postdata.setLanguage("en");
         new NetworkRequest(this, postdata).postRequest();
     }
 
     private void loadAddNewPrivyActivity() {
-        PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
-        try {
-            startActivityForResult(builder.build(this), PLACE_PICKER_REQUEST);
-        } catch (Exception e) {
-            Log.d(DEBUG, e.toString());
+        if (checkIfLoggedIn()) {
+            PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+            try {
+                startActivityForResult(builder.build(this), PLACE_PICKER_REQUEST);
+            } catch (Exception e) {
+                Log.d(DEBUG, e.toString());
+            }
+        } else {
+            startGoogleSignInActivity(RC_SIGN_IN_NEW_PRIVY_REQUEST);
+            snackMsg("Please Sign In to add new Privy");
         }
     }
 
@@ -220,4 +387,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private boolean checkLocationEnabledPermission() {
         return ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
     }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        snackMsg("Some Error while Connecting to Google Service!!");
+        Log.d(DEBUG, "OnConnectionFailed: " + connectionResult.toString());
+    }
+
+
 }

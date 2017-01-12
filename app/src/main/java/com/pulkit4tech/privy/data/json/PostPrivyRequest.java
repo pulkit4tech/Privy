@@ -9,6 +9,15 @@ public class PostPrivyRequest {
     private String address;
     private ArrayList<String> types;
     private String language;
+    private String website;
+
+    public String getWebsite() {
+        return website;
+    }
+
+    public void setWebsite(String website) {
+        this.website = website;
+    }
 
     public Location getLocation() {
         return location;
@@ -67,6 +76,7 @@ public class PostPrivyRequest {
                 ", address='" + address + '\'' +
                 ", types=" + types +
                 ", language='" + language + '\'' +
+                ", website='" + website + '\'' +
                 '}';
     }
 }
