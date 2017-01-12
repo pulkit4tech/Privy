@@ -2,7 +2,7 @@ package com.pulkit4tech.privy.data.json;
 
 import java.util.List;
 
-public class PrivyPost {
+public class GetPrivyResponse {
     private List<String> html_attributions;
     private List<MarkerData> results;
     private String status;
@@ -21,7 +21,7 @@ public class PrivyPost {
 
     @Override
     public String toString() {
-        return "PrivyPost{" +
+        return "GetPrivyResponse{" +
                 "html_attributions=" + html_attributions +
                 ", results=" + results +
                 ", status='" + status + '\'' +
