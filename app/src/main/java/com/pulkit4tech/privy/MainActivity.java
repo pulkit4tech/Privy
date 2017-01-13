@@ -116,8 +116,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void setUpNavigationHeaderValue() {
         // TODO : Set Profile Image
-        userName.setText(mSharedPreferences.getString(NAME, getResources().getString(R.string.sign_in)));
+        userName.setText(mSharedPreferences.getString(NAME, getString(R.string.sign_in)));
         emailId.setText(mSharedPreferences.getString(EMAIL, ""));
+
+        changeSignInSignOutOption();
+    }
+
+    private void changeSignInSignOutOption() {
+        Menu menu = navigationView.getMenu();
+        MenuItem sign_in_out_item = menu.findItem(R.id.nav_sign_in_out);
+        if (checkIfLoggedIn()) {
+            sign_in_out_item.setTitle(R.string.sign_out);
+        } else {
+            sign_in_out_item.setTitle(R.string.sign_in);
+        }
     }
 
     private void setUpFab() {
@@ -143,9 +155,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onResult(@NonNull Status status) {
                 if (status.isSuccess()) {
-                    snackMsg("Signed Out!!");
+                    fab.show();
+                    snackMsg(getString(R.string.sign_out_msg));
                 } else {
-                    snackMsg("Some error while signing out!");
+                    snackMsg(getString(R.string.sign_out_error_msg));
                     Log.d(DEBUG, "Sign out error : " + status.toString());
                 }
             }
@@ -185,10 +198,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case MY_PERMISSIONS_REQUEST_FINE_LOCATIONS:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     loadMapFragment();
-                    snackMsg("Permission granted!!");
+                    snackMsg(getString(R.string.location_permission_success));
                 } else {
                     loadFragment(new NoLocationPermission());
-                    snackMsg("Please give permission for location");
+                    snackMsg(getString(R.string.location_permission_failed));
                 }
                 break;
 
@@ -245,7 +258,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else if (id == R.id.nav_request_new) {
             loadAddNewPrivyActivity();
             closeDrawer();
-        } else if (id == R.id.nav_sign_in_up) {
+        } else if (id == R.id.nav_sign_in_out) {
             if (checkIfLoggedIn())
                 signOut();
             else
@@ -268,10 +281,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 if (placeToAdd.getLatLng() != null) {
                     requestNewPrivy(placeToAdd);
                 } else {
-                    snackMsg("Some Error!! Was not able to retrieve information properly");
+                    snackMsg(getString(R.string.error_retrieving_data_msg));
                 }
             } else {
-                snackMsg("Please Select a Location if you wished to request Privy!");
+                snackMsg(getString(R.string.select_location_request_msg));
             }
 
             navigationView.getMenu().getItem(0).setChecked(true);
@@ -303,7 +316,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             fab.hide();
         } else {
             clearSharedPreference();
-            snackMsg("Please Sign in to request new Privy");
+            snackMsg(getString(R.string.request_location_permission));
         }
         setUpNavigationHeaderValue();
     }
@@ -318,7 +331,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             fab.hide();
         } else {
             clearSharedPreference();
-            snackMsg("Please Sign in to request new Privy");
+            snackMsg(getString(R.string.request_location_permission));
         }
         setUpNavigationHeaderValue();
     }
@@ -330,6 +343,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         editor.putString(NAME, acct.getDisplayName());
         editor.putString(EMAIL, acct.getEmail());
         editor.commit();
+
+        snackMsg(getString(R.string.sign_in_msg));
     }
 
     private void clearSharedPreference() {
@@ -364,7 +379,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         } else {
             startGoogleSignInActivity(RC_SIGN_IN_NEW_PRIVY_REQUEST);
-            snackMsg("Please Sign In to add new Privy");
+            snackMsg(getString(R.string.request_location_permission));
         }
     }
 
@@ -390,7 +405,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        snackMsg("Some Error while Connecting to Google Service!!");
+        snackMsg(getString(R.string.google_api_client_connection_faliure_msg));
         Log.d(DEBUG, "OnConnectionFailed: " + connectionResult.toString());
     }
 
