@@ -1,3 +1,24 @@
 <resources>
     <string name="app_name">Privy</string>
+    <string name="title_activity_privy_maps">Nearby Privy\'s</string>
+    <string name="request_api">maps.googleapis.com</string>
+    <string name="radius">1000</string>
+    <string name="error_retrieving_data_msg">Some error while retrieving data!!</string>
+    <string name="no_result_msg">Sorry No privy\'s found. Please help community and add one</string>
+    <string name="network_error">Sorry!! Network Error..</string>
+    <string name="navigation_drawer_open">Open Navigation Drawer</string>
+    <string name="navigation_drawer_close">Close Navigation Drawer</string>
+    <string name="action_settings">Settings</string>
+    <string name="sign_in">Sign In</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="sign_out_msg">Signed Out!!</string>
+    <string name="sign_in_msg">Signed In!!</string>
+    <string name="sign_out_error_msg">Some error while signing out!</string>
+    <string name="location_permission_success">Permission granted!!</string>
+    <string name="location_permission_failed">Please give permission for location</string>
+    <string name="request_location_permission">Please Sign In to request new Privy.</string>
+    <string name="google_api_client_connection_faliure_msg">Some Error while Connecting to Google Service!!</string>
+    <string name="select_location_request_msg">Please select a location to request new Privy.</string>
+    <string name="nav_nearby_privy">Nearby Privy\'s</string>
+    <string name="nav_add_privy">Add Privy</string>
 </resources>
