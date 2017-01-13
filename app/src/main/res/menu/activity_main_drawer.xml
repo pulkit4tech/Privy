@@ -5,19 +5,19 @@
         <item
             android:id="@+id/nav_nearby_privy"
             android:icon="@drawable/ic_menu_camera"
-            android:title="Nearby Privy's" />
+            android:title="@string/nav_nearby_privy" />
         <item
             android:id="@+id/nav_request_new"
             android:icon="@drawable/ic_menu_gallery"
-            android:title="Add Privy" />
+            android:title="@string/nav_add_privy" />
         <!--<item-->
             <!--android:id="@+id/nav_slideshow"-->
             <!--android:icon="@drawable/ic_menu_slideshow"-->
             <!--android:title="Slideshow" />-->
         <item
-            android:id="@+id/nav_sign_in_up"
+            android:id="@+id/nav_sign_in_out"
             android:icon="@drawable/ic_menu_manage"
-            android:title="Sign In" />
+            android:title="@string/sign_in" />
     </group>
 
     <item android:title="Communicate">
