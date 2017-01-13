@@ -22,8 +22,11 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -58,8 +61,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private SharedPreferences mSharedPreferences;
     private String NAME = "user_name";
     private String EMAIL = "email_id";
+    private String PROFILE_PIC_URL = "profile_pic_url";
     private String LOGGED_IN = "logged_in";
-    //  private ImageView profileImg;
+    private ImageView profileImg;
     private TextView userName, emailId;
 
     @Override
@@ -107,7 +111,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void setUpNavigationHeader() {
         View nav_head = navigationView.getHeaderView(0);
-//      profileImg = (ImageView) nav_head.findViewById(R.id.profile_pic);
+        profileImg = (ImageView) nav_head.findViewById(R.id.profile_pic);
         userName = (TextView) nav_head.findViewById(R.id.user_name);
         emailId = (TextView) nav_head.findViewById(R.id.email_id);
 
@@ -118,6 +122,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // TODO : Set Profile Image
         userName.setText(mSharedPreferences.getString(NAME, getString(R.string.sign_in)));
         emailId.setText(mSharedPreferences.getString(EMAIL, ""));
+        Glide.with(mContext).load(mSharedPreferences.getString(PROFILE_PIC_URL, ""))
+                .thumbnail(0.5f)
+                .crossFade()
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .error(R.mipmap.ic_launcher)
+                .into(profileImg);
 
         changeSignInSignOutOption();
     }
@@ -174,7 +184,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Testing Google Sign in
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
-                .requestProfile()
                 .build();
 
         // Build a GoogleApiClient with access to the Google Sign-In API and the
@@ -340,8 +349,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // TODO : add Profile Picture
         SharedPreferences.Editor editor = mSharedPreferences.edit();
         editor.putBoolean(LOGGED_IN, true);
-        editor.putString(NAME, acct.getDisplayName());
-        editor.putString(EMAIL, acct.getEmail());
+        if (acct.getDisplayName() != null)
+            editor.putString(NAME, acct.getDisplayName());
+        if (acct.getEmail() != null)
+            editor.putString(EMAIL, acct.getEmail());
+        if (acct.getPhotoUrl() != null)
+            editor.putString(PROFILE_PIC_URL, acct.getPhotoUrl().toString());
         editor.commit();
 
         snackMsg(getString(R.string.sign_in_msg));
