@@ -15,7 +15,8 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme.NoActionBar">
+        android:theme="@style/AppTheme.NoActionBar"
+        android:name="android.support.multidex.MultiDexApplication">
         <activity android:name=".MainActivity"
             android:screenOrientation="portrait">
             <intent-filter>
