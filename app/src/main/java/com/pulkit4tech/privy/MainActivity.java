@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -13,6 +14,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -27,6 +30,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -119,17 +123,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void setUpNavigationHeaderValue() {
-        userName.setText(mSharedPreferences.getString(NAME, getString(R.string.sign_in)));
+        userName.setText(mSharedPreferences.getString(NAME, ""));
         emailId.setText(mSharedPreferences.getString(EMAIL, ""));
-        Glide.with(mContext).load(mSharedPreferences.getString(PROFILE_PIC_URL, ""))
-                .override(150, 150)
-                .fitCenter()
-                .crossFade()
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .error(R.mipmap.ic_launcher)
-                .into(profileImg);
+        loadProfilePic();
 
         changeSignInSignOutOption();
+    }
+
+    private void loadProfilePic() {
+        Glide.with(mContext).load(mSharedPreferences.getString(PROFILE_PIC_URL, ""))
+                .asBitmap()
+                .fitCenter()
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .error(R.drawable.default_avatar)
+                .into(new BitmapImageViewTarget(profileImg) {
+                    @Override
+                    protected void setResource(Bitmap resource) {
+                        RoundedBitmapDrawable circularBitmapDrawable =
+                                RoundedBitmapDrawableFactory.create(mContext.getResources(), resource);
+                        circularBitmapDrawable.setCircular(true);
+                        profileImg.setImageDrawable(circularBitmapDrawable);
+                    }
+                });
     }
 
     private void changeSignInSignOutOption() {
