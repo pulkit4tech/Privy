@@ -119,11 +119,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void setUpNavigationHeaderValue() {
-        // TODO : Set Profile Image
         userName.setText(mSharedPreferences.getString(NAME, getString(R.string.sign_in)));
         emailId.setText(mSharedPreferences.getString(EMAIL, ""));
         Glide.with(mContext).load(mSharedPreferences.getString(PROFILE_PIC_URL, ""))
-                .thumbnail(0.5f)
+                .override(150, 150)
+                .fitCenter()
                 .crossFade()
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .error(R.mipmap.ic_launcher)
@@ -220,7 +220,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void loadFragment(Fragment fragment) {
-        getSupportFragmentManager().beginTransaction().add(R.id.frame_container, fragment, fragment.getClass().getName()).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).commit();
+        getSupportFragmentManager().beginTransaction().add(R.id.frame_container, fragment).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).commit();
     }
 
     @Override
@@ -283,6 +283,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        loadMapFragment();
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == PLACE_PICKER_REQUEST) {
             if (resultCode == RESULT_OK) {
@@ -297,8 +303,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
 
             navigationView.getMenu().getItem(0).setChecked(true);
-            loadMapFragment();
         }
+
 
         // Google Sign in Callback
         if (requestCode == RC_SIGN_IN) {
