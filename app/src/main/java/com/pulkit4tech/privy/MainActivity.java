@@ -80,6 +80,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (savedInstanceState == null) {
             setUpInfo();
         }
+
+        loadMapFragment();
     }
 
     @Override
@@ -95,9 +97,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (checkIfLoggedIn()) {
             fab.hide();
         }
-
-        navigationView.getMenu().getItem(0).setChecked(true);
-        loadMapFragment();
     }
 
     private void setUpNavigationDrawer() {
@@ -300,7 +299,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onPostResume() {
         super.onPostResume();
-        loadMapFragment();
+//        if(checkLocationEnabledPermission())
+//        loadMapFragment();
     }
 
     @Override
@@ -418,6 +418,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void loadMapFragment() {
+        navigationView.getMenu().getItem(0).setChecked(true);
         if (!checkLocationEnabledPermission()) {
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_REQUEST_FINE_LOCATIONS);
         } else {

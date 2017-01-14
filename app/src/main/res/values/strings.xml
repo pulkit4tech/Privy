@@ -21,4 +21,9 @@
     <string name="select_location_request_msg">Please select a location to request new Privy.</string>
     <string name="nav_nearby_privy">Nearby Privy\'s</string>
     <string name="nav_add_privy">Add Privy</string>
+    <string name="add_privy_success">Successfully added Privy. Thanks contributing to community.</string>
+    <string name="add_privy_failed">Some error while adding Privy!! Please try after sometime or please report.</string>
+    <string name="marker_data">Marker Data</string>
+    <string name="n_a">N/A</string>
+    <string name="error_processing_request">Some error while processing request!!</string>
 </resources>
