@@ -151,8 +151,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         MenuItem sign_in_out_item = menu.findItem(R.id.nav_sign_in_out);
         if (checkIfLoggedIn()) {
             sign_in_out_item.setTitle(R.string.sign_out);
+            sign_in_out_item.setIcon(this.getResources().getDrawable(R.drawable.sign_out));
         } else {
             sign_in_out_item.setTitle(R.string.sign_in);
+            sign_in_out_item.setIcon(this.getResources().getDrawable(R.drawable.sign_in));
         }
     }
 
@@ -247,27 +249,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        // Inflate the menu; this adds items to the action bar if it is present.
+//        getMenuInflater().inflate(R.menu.main, menu);
+//        return true;
+//    }
+//
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        // Handle action bar item clicks here. The action bar will
+//        // automatically handle clicks on the Home/Up button, so long
+//        // as you specify a parent activity in AndroidManifest.xml.
+//        int id = item.getItemId();
+//
+//        //noinspection SimplifiableIfStatement
+//        if (id == R.id.action_settings) {
+//            return true;
+//        }
+//
+//        return super.onOptionsItemSelected(item);
+//    }
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -282,13 +284,36 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             loadAddNewPrivyActivity();
             closeDrawer();
         } else if (id == R.id.nav_sign_in_out) {
-            if (checkIfLoggedIn())
+            if (checkIfLoggedIn()) {
                 signOut();
-            else
+            } else {
                 startGoogleSignInActivity(RC_SIGN_IN);
+            }
+        } else if (id == R.id.nav_share) {
+            shareApp();
+            closeDrawer();
+        } else if (id == R.id.nav_feedback) {
+            sendFeedBack();
+            closeDrawer();
         }
-        //TODO : Add other conditions
         return true;
+    }
+
+    private void sendFeedBack() {
+        Intent Email = new Intent(Intent.ACTION_SEND);
+        Email.setType("text/email");
+        Email.putExtra(Intent.EXTRA_EMAIL, new String[]{getString(R.string.app_feedback_mail)});
+        Email.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.feedback_subject));
+        startActivity(Intent.createChooser(Email, getString(R.string.send_feedback_msg)));
+    }
+
+    private void shareApp() {
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_TEXT,
+                getString(R.string.social_share_msg));
+        sendIntent.setType("text/plain");
+        startActivity(sendIntent);
     }
 
     private void closeDrawer() {
@@ -367,7 +392,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void addLoginInfo(GoogleSignInAccount acct) {
-        // TODO : add Profile Picture
         SharedPreferences.Editor editor = mSharedPreferences.edit();
         editor.putBoolean(LOGGED_IN, true);
         if (acct.getDisplayName() != null)

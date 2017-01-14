@@ -29,4 +29,8 @@
     <string name="wrong_info">Wrong Info ?</string>
     <string name="delete_request_success">Got request to delete Privy successfully. Its under moderation, thanks for contributing.</string>
     <string name="delete_request_failed">Delete request failed!!</string>
+    <string name="social_share_msg">Hey check out @PrivyFinder Application. Its an awesome app contributing to make clean and helpful world.</string>
+    <string name="app_feedback_mail">privyfinder@gmail.com</string>
+    <string name="feedback_subject">Feedback</string>
+    <string name="send_feedback_msg">Send Feedback:</string>
 </resources>
