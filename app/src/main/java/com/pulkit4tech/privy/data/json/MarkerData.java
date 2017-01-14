@@ -2,9 +2,11 @@ package com.pulkit4tech.privy.data.json;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
-public class MarkerData {
+public class MarkerData implements Serializable {
     private LocationData geometry;
 
     @SerializedName("icon")
@@ -15,6 +17,24 @@ public class MarkerData {
     private String scope;
     private List<String> types;
     private String vicinity;
+    private OpeningHours opening_hours;
+    private float rating;
+
+    public float getRating() {
+        return rating;
+    }
+
+    public void setRating(float rating) {
+        this.rating = rating;
+    }
+
+    public OpeningHours getOpeninghours() {
+        return opening_hours;
+    }
+
+    public void setOpeninghours(OpeningHours opening_hours) {
+        this.opening_hours = opening_hours;
+    }
 
     public LocationData getGeometry() {
         return geometry;
@@ -91,6 +111,37 @@ public class MarkerData {
                 ", scope='" + scope + '\'' +
                 ", types=" + types +
                 ", vicinity='" + vicinity + '\'' +
+                ", opening_hours=" + opening_hours +
+                ", rating=" + rating +
                 '}';
+    }
+
+    public class OpeningHours implements Serializable{
+        private boolean open_now;
+        private ArrayList<String> weekday_text;
+
+        public boolean isOpennow() {
+            return open_now;
+        }
+
+        public void setOpennow(boolean open_now) {
+            this.open_now = open_now;
+        }
+
+        public ArrayList<String> getWeekdaytext() {
+            return weekday_text;
+        }
+
+        public void setWeekdaytext(ArrayList<String> weekday_text) {
+            this.weekday_text = weekday_text;
+        }
+
+        @Override
+        public String toString() {
+            return "OpeningHours{" +
+                    "open_now=" + open_now +
+                    ", weekday_text=" + weekday_text +
+                    '}';
+        }
     }
 }

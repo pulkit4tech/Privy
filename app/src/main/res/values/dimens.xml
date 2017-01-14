@@ -11,4 +11,7 @@
     <dimen name="fab_margin_start">10sp</dimen>
     <dimen name="profile_pic_width">80sp</dimen>
     <dimen name="profile_pic_height">80sp</dimen>
+    <dimen name="card_view_margin">16sp</dimen>
+    <dimen name="card_view_elevation">16dp</dimen>
+    <dimen name="fab_elevation">5sp</dimen>
 </resources>

@@ -1,9 +1,12 @@
 package com.pulkit4tech.privy.utilities;
 
-import android.content.Context;
+import android.app.Activity;
+import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.util.Log;
-import android.widget.Toast;
+import android.view.View;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -20,6 +23,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.pulkit4tech.privy.PrivyDetailsActivity;
 import com.pulkit4tech.privy.R;
 import com.pulkit4tech.privy.data.json.GetPrivyResponse;
 import com.pulkit4tech.privy.data.json.MarkerData;
@@ -37,7 +41,7 @@ public class NetworkRequest {
 
     private LatLng myLocation;
     private RequestQueue requestQueue;
-    private Context mContext;
+    private Activity mContext;
     private PostPrivyRequest data;
     private GoogleMap mMap;
     private Gson gson;
@@ -59,7 +63,7 @@ public class NetworkRequest {
 
     private HashMap<String, MarkerData> hm;
 
-    public NetworkRequest(Context mContext, GoogleMap mMap, HashMap<String, MarkerData> universalMarkerHashMap, LatLng myLocation) {
+    public NetworkRequest(Activity mContext, GoogleMap mMap, HashMap<String, MarkerData> universalMarkerHashMap, LatLng myLocation) {
         this.myLocation = myLocation;
         this.mContext = mContext;
         this.mMap = mMap;
@@ -68,7 +72,7 @@ public class NetworkRequest {
         requestQueue = Volley.newRequestQueue(mContext);
     }
 
-    public NetworkRequest(Context mContext, PostPrivyRequest data) {
+    public NetworkRequest(Activity mContext, PostPrivyRequest data) {
         this.mContext = mContext;
         this.data = data;
         gson = new GsonBuilder().create();
@@ -101,9 +105,9 @@ public class NetworkRequest {
             GetPrivyResponse post = gson.fromJson(response, GetPrivyResponse.class);
             if (post.getResults().size() == 0) {
                 if (post.getStatus().equals("ZERO_RESULTS"))
-                    makeToast(mContext, mContext.getResources().getString(R.string.no_result_msg));
+                    snackMsg(mContext.getResources().getString(R.string.no_result_msg));
                 else {
-                    makeToast(mContext, mContext.getResources().getString(R.string.error_retrieving_data_msg));
+                    snackMsg(mContext.getResources().getString(R.string.error_retrieving_data_msg));
                     Log.e(DEBUG, post.toString());
                 }
             } else {
@@ -125,7 +129,7 @@ public class NetworkRequest {
             public boolean onMarkerClick(Marker marker) {
                 //testing
                 if (hm.containsKey(marker.getId()))
-                    makeToast(mContext, hm.get(marker.getId()).getName());
+                    snackActionMsg(marker);
                 else
                     marker.remove();
                 return false;
@@ -136,7 +140,7 @@ public class NetworkRequest {
     private Response.ErrorListener getErrorListner = new Response.ErrorListener() {
         @Override
         public void onErrorResponse(VolleyError error) {
-            makeToast(mContext, mContext.getResources().getString(R.string.network_error));
+            snackMsg(mContext.getResources().getString(R.string.network_error));
             Log.d(DEBUG, error.toString());
         }
     };
@@ -164,10 +168,10 @@ public class NetworkRequest {
         public void onResponse(JSONObject response) {
             PostPrivyResponse res = gson.fromJson(response.toString(), PostPrivyResponse.class);
             if (res.getStatus().equals(OK)) {
-                makeToast(mContext, "Successfully added Privy. Thanks contributing to community.");
+                snackMsg(mContext.getString(R.string.add_privy_success));
             } else {
                 Log.d(DEBUG, res.toString());
-                makeToast(mContext, "Some error while adding Privy!! Please try after sometime or please report.");
+                snackMsg(mContext.getString(R.string.add_privy_failed));
             }
         }
     };
@@ -175,7 +179,7 @@ public class NetworkRequest {
     private Response.ErrorListener postErrorListner = new Response.ErrorListener() {
         @Override
         public void onErrorResponse(VolleyError error) {
-            makeToast(mContext, mContext.getResources().getString(R.string.network_error));
+            snackMsg(mContext.getResources().getString(R.string.network_error));
             Log.d(DEBUG, error.toString());
         }
     };
@@ -205,8 +209,23 @@ public class NetworkRequest {
         Log.d(DEBUG, jsonObject.toString());
         return jsonObject;
     }
+    
+    private void snackMsg(String msg) {
+        Snackbar.make(mContext.findViewById(R.id.coordinator_layout), msg, Snackbar.LENGTH_LONG).show();
+    }
 
-    private void makeToast(Context context, String msg) {
-        Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
+    private void snackActionMsg(final Marker marker) {
+        Snackbar snackbar = Snackbar.make(mContext.findViewById(R.id.coordinator_layout), hm.get(marker.getId()).getName(), Snackbar.LENGTH_LONG);
+        snackbar.setAction("Details", new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(mContext, PrivyDetailsActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putSerializable(mContext.getString(R.string.marker_data), hm.get(marker.getId()));
+                intent.putExtras(bundle);
+                mContext.startActivity(intent);
+            }
+        });
+        snackbar.show();
     }
 }

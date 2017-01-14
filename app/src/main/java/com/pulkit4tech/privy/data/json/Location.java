@@ -1,6 +1,8 @@
 package com.pulkit4tech.privy.data.json;
 
-public class Location {
+import java.io.Serializable;
+
+public class Location implements Serializable{
     private double lat;
     private double lng;
 

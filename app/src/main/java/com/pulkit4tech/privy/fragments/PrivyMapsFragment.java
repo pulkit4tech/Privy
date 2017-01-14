@@ -162,10 +162,10 @@ public class PrivyMapsFragment extends Fragment implements OnMapReadyCallback {
     }
 
     private void markNearbyPrivys(LatLng myLocation) {
-        new NetworkRequest(mContext, mMap, universalMarkers, myLocation).getMarkerData();
+        new NetworkRequest(getActivity(), mMap, universalMarkers, myLocation).getMarkerData();
     }
 
-    public void snackMsg(String msg) {
+    private void snackMsg(String msg) {
         Snackbar.make((CoordinatorLayout) getActivity().findViewById(R.id.coordinator_layout), msg, Snackbar.LENGTH_LONG).show();
     }
 }
