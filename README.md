@@ -3,22 +3,11 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/3a93197a744c42eaa16e3ebcb4a47de8)](https://www.codacy.com?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=pulkit4tech/Privy&amp;utm_campaign=Badge_Grade)
 ### Description
 
-//TODO
-
-### Usability 
-
-//TODO
+Android Application to see Privy near you
 
 ### Screenshots
 
 //TODO
-
-### Task to do
-
-- [ ] Build basic Application
-- [ ] Create and solve issues
-- [ ] Feature Extension 
-- [ ] other ...
 
 Contributing Guidelines
 -----------------------
