@@ -50,7 +50,7 @@ public class NetworkRequest {
     private String NAME_KEY = "name";
     private String NAME_VALUE = "toilet";
     private String RADIUS = "radius";
-//    private String RANKBY = "rankby";
+    //    private String RANKBY = "rankby";
 //    private String DISTANCE = "distance";
     private String GOOGLE_MAP_API_KEY = "key";
     private String MAPS = "maps";
@@ -105,9 +105,9 @@ public class NetworkRequest {
             GetPrivyResponse post = gson.fromJson(response, GetPrivyResponse.class);
             if (post.getResults().size() == 0) {
                 if (post.getStatus().equals("ZERO_RESULTS"))
-                    snackMsg(mContext.getResources().getString(R.string.no_result_msg));
+                    snackMsg(mContext.getString(R.string.no_result_msg));
                 else {
-                    snackMsg(mContext.getResources().getString(R.string.error_retrieving_data_msg));
+                    snackMsg(mContext.getString(R.string.error_retrieving_data_msg));
                     Log.e(DEBUG, post.toString());
                 }
             } else {
@@ -140,7 +140,7 @@ public class NetworkRequest {
     private Response.ErrorListener getErrorListner = new Response.ErrorListener() {
         @Override
         public void onErrorResponse(VolleyError error) {
-            snackMsg(mContext.getResources().getString(R.string.network_error));
+            snackMsg(mContext.getString(R.string.network_error));
             Log.d(DEBUG, error.toString());
         }
     };
@@ -148,7 +148,7 @@ public class NetworkRequest {
     private String getRequestUrl() {
         Uri.Builder builder = new Uri.Builder();
         builder.scheme("https")
-                .authority(mContext.getResources().getString(R.string.request_api))
+                .authority(mContext.getString(R.string.request_api))
                 .appendPath(MAPS)
                 .appendPath(API)
                 .appendPath(PLACE)
@@ -157,8 +157,8 @@ public class NetworkRequest {
                 .encodedQuery(LOCATION + "=" + String.format("%f,%f", myLocation.latitude, myLocation.longitude))
                 .appendQueryParameter(NAME_KEY, NAME_VALUE)
                 //   .appendQueryParameter(RANKBY,DISTANCE)
-                .appendQueryParameter(RADIUS, mContext.getResources().getString(R.string.radius))
-                .appendQueryParameter(GOOGLE_MAP_API_KEY, mContext.getResources().getString(R.string.google_maps_key));
+                .appendQueryParameter(RADIUS, mContext.getString(R.string.radius))
+                .appendQueryParameter(GOOGLE_MAP_API_KEY, mContext.getString(R.string.google_maps_key));
 
         return builder.build().toString();
     }
@@ -179,7 +179,7 @@ public class NetworkRequest {
     private Response.ErrorListener postErrorListner = new Response.ErrorListener() {
         @Override
         public void onErrorResponse(VolleyError error) {
-            snackMsg(mContext.getResources().getString(R.string.network_error));
+            snackMsg(mContext.getString(R.string.network_error));
             Log.d(DEBUG, error.toString());
         }
     };
@@ -187,13 +187,13 @@ public class NetworkRequest {
     private String postRequestUrl() {
         Uri.Builder builder = new Uri.Builder();
         builder.scheme("https")
-                .authority(mContext.getResources().getString(R.string.request_api))
+                .authority(mContext.getString(R.string.request_api))
                 .appendPath(MAPS)
                 .appendPath(API)
                 .appendPath(PLACE)
                 .appendPath(ADD)
                 .appendPath(JSON)
-                .appendQueryParameter(GOOGLE_MAP_API_KEY, mContext.getResources().getString(R.string.google_maps_key));
+                .appendQueryParameter(GOOGLE_MAP_API_KEY, mContext.getString(R.string.google_maps_key));
         String url = builder.build().toString();
         Log.d(DEBUG, url);
         return url;
@@ -209,7 +209,7 @@ public class NetworkRequest {
         Log.d(DEBUG, jsonObject.toString());
         return jsonObject;
     }
-    
+
     private void snackMsg(String msg) {
         Snackbar.make(mContext.findViewById(R.id.coordinator_layout), msg, Snackbar.LENGTH_LONG).show();
     }

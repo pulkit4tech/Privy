@@ -6,15 +6,26 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.RelativeLayout;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+import com.google.gson.GsonBuilder;
+import com.pulkit4tech.privy.data.PostPrivyDeleteRequest;
 import com.pulkit4tech.privy.data.json.LocationData;
 import com.pulkit4tech.privy.data.json.MarkerData;
+import com.pulkit4tech.privy.data.json.PostPrivyDeleteResponse;
+
+import org.json.JSONObject;
 
 import static android.content.Intent.ACTION_VIEW;
 import static com.pulkit4tech.privy.constants.Constants.DEBUG;
@@ -22,6 +33,13 @@ import static com.pulkit4tech.privy.constants.Constants.DEBUG;
 public class PrivyDetailsActivity extends AppCompatActivity {
 
     private MarkerData data;
+    private String GOOGLE_MAP_API_KEY = "key";
+    private String MAPS = "maps";
+    private String API = "api";
+    private String PLACE = "place";
+    private String DELETE = "delete";
+    private String JSON = "json";
+    private String OK = "OK";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +54,80 @@ public class PrivyDetailsActivity extends AppCompatActivity {
             setData();
         }
 
+        setDelete();
     }
+
+    private void setDelete() {
+        Button delete = (Button) findViewById(R.id.delete_privy);
+        delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                deletePrivy();
+            }
+        });
+    }
+
+    private void deletePrivy() {
+        JsonObjectRequest request = new JsonObjectRequest(
+                postDeleteUrl(),
+                postJsonBody(),
+                postDelResListner,
+                errorListener
+        );
+
+        Volley.newRequestQueue(this).add(request);
+    }
+
+    private JSONObject postJsonBody() {
+        JSONObject jsonObject = null;
+        try {
+            PostPrivyDeleteRequest delete_data = new PostPrivyDeleteRequest();
+            delete_data.setPlaceid(data.getPlaceid());
+            jsonObject = new JSONObject(new GsonBuilder().create().toJson(delete_data));
+        } catch (Exception e) {
+            Log.d(DEBUG, e.toString());
+        }
+
+        Log.d(DEBUG, "Delete Request Json Body : " + jsonObject.toString());
+        return jsonObject;
+    }
+
+    private String postDeleteUrl() {
+        Uri.Builder builder = new Uri.Builder();
+        builder.scheme("https")
+                .authority(getString(R.string.request_api))
+                .appendPath(MAPS)
+                .appendPath(API)
+                .appendPath(PLACE)
+                .appendPath(DELETE)
+                .appendPath(JSON)
+                .appendQueryParameter(GOOGLE_MAP_API_KEY, getString(R.string.google_maps_key));
+        String url = builder.build().toString();
+        Log.d(DEBUG, url);
+        return url;
+    }
+
+    private Response.Listener postDelResListner = new Response.Listener<JSONObject>() {
+        @Override
+        public void onResponse(JSONObject response) {
+            PostPrivyDeleteResponse res = new GsonBuilder().create().fromJson(response.toString(), PostPrivyDeleteResponse.class);
+            if (res.getStatus().equals(OK)) {
+                Toast.makeText(getApplicationContext(), getString(R.string.delete_request_success), Toast.LENGTH_LONG).show();
+                finish();
+            } else {
+                Log.d(DEBUG, res.toString());
+                snackMsg(getString(R.string.delete_request_failed));
+            }
+        }
+    };
+
+    private Response.ErrorListener errorListener = new Response.ErrorListener() {
+        @Override
+        public void onErrorResponse(VolleyError error) {
+            snackMsg(getString(R.string.network_error));
+            Log.d(DEBUG, error.toString());
+        }
+    };
 
     private void setFab() {
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -124,7 +215,6 @@ public class PrivyDetailsActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // handle arrow click here
         if (item.getItemId() == android.R.id.home) {
             finish(); // close this activity and return to preview activity (if there is any)
         }
@@ -133,6 +223,6 @@ public class PrivyDetailsActivity extends AppCompatActivity {
     }
 
     private void snackMsg(String msg) {
-        Snackbar.make((RelativeLayout) findViewById(R.id.relative_layout_privy_detail), msg, Snackbar.LENGTH_LONG).show();
+        Snackbar.make((CardView) findViewById(R.id.cardview), msg, Snackbar.LENGTH_LONG).show();
     }
 }

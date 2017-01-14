@@ -26,4 +26,7 @@
     <string name="marker_data">Marker Data</string>
     <string name="n_a">N/A</string>
     <string name="error_processing_request">Some error while processing request!!</string>
+    <string name="wrong_info">Wrong Info ?</string>
+    <string name="delete_request_success">Got request to delete Privy successfully. Its under moderation, thanks for contributing.</string>
+    <string name="delete_request_failed">Delete request failed!!</string>
 </resources>
