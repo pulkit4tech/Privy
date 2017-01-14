@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -13,6 +14,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -27,6 +30,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -76,6 +80,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (savedInstanceState == null) {
             setUpInfo();
         }
+
+        loadMapFragment();
     }
 
     @Override
@@ -91,9 +97,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (checkIfLoggedIn()) {
             fab.hide();
         }
-
-        navigationView.getMenu().getItem(0).setChecked(true);
-        loadMapFragment();
     }
 
     private void setUpNavigationDrawer() {
@@ -119,17 +122,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void setUpNavigationHeaderValue() {
-        userName.setText(mSharedPreferences.getString(NAME, getString(R.string.sign_in)));
+        userName.setText(mSharedPreferences.getString(NAME, ""));
         emailId.setText(mSharedPreferences.getString(EMAIL, ""));
-        Glide.with(mContext).load(mSharedPreferences.getString(PROFILE_PIC_URL, ""))
-                .override(150, 150)
-                .fitCenter()
-                .crossFade()
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .error(R.mipmap.ic_launcher)
-                .into(profileImg);
+        loadProfilePic();
 
         changeSignInSignOutOption();
+    }
+
+    private void loadProfilePic() {
+        Glide.with(mContext).load(mSharedPreferences.getString(PROFILE_PIC_URL, ""))
+                .asBitmap()
+                .fitCenter()
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .error(R.drawable.default_avatar)
+                .into(new BitmapImageViewTarget(profileImg) {
+                    @Override
+                    protected void setResource(Bitmap resource) {
+                        RoundedBitmapDrawable circularBitmapDrawable =
+                                RoundedBitmapDrawableFactory.create(mContext.getResources(), resource);
+                        circularBitmapDrawable.setCircular(true);
+                        profileImg.setImageDrawable(circularBitmapDrawable);
+                    }
+                });
     }
 
     private void changeSignInSignOutOption() {
@@ -137,8 +151,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         MenuItem sign_in_out_item = menu.findItem(R.id.nav_sign_in_out);
         if (checkIfLoggedIn()) {
             sign_in_out_item.setTitle(R.string.sign_out);
+            sign_in_out_item.setIcon(this.getResources().getDrawable(R.drawable.sign_out));
         } else {
             sign_in_out_item.setTitle(R.string.sign_in);
+            sign_in_out_item.setIcon(this.getResources().getDrawable(R.drawable.sign_in));
         }
     }
 
@@ -233,27 +249,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        // Inflate the menu; this adds items to the action bar if it is present.
+//        getMenuInflater().inflate(R.menu.main, menu);
+//        return true;
+//    }
+//
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        // Handle action bar item clicks here. The action bar will
+//        // automatically handle clicks on the Home/Up button, so long
+//        // as you specify a parent activity in AndroidManifest.xml.
+//        int id = item.getItemId();
+//
+//        //noinspection SimplifiableIfStatement
+//        if (id == R.id.action_settings) {
+//            return true;
+//        }
+//
+//        return super.onOptionsItemSelected(item);
+//    }
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -268,13 +284,36 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             loadAddNewPrivyActivity();
             closeDrawer();
         } else if (id == R.id.nav_sign_in_out) {
-            if (checkIfLoggedIn())
+            if (checkIfLoggedIn()) {
                 signOut();
-            else
+            } else {
                 startGoogleSignInActivity(RC_SIGN_IN);
+            }
+        } else if (id == R.id.nav_share) {
+            shareApp();
+            closeDrawer();
+        } else if (id == R.id.nav_feedback) {
+            sendFeedBack();
+            closeDrawer();
         }
-        //TODO : Add other conditions
         return true;
+    }
+
+    private void sendFeedBack() {
+        Intent Email = new Intent(Intent.ACTION_SEND);
+        Email.setType("text/email");
+        Email.putExtra(Intent.EXTRA_EMAIL, new String[]{getString(R.string.app_feedback_mail)});
+        Email.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.feedback_subject));
+        startActivity(Intent.createChooser(Email, getString(R.string.send_feedback_msg)));
+    }
+
+    private void shareApp() {
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_TEXT,
+                getString(R.string.social_share_msg));
+        sendIntent.setType("text/plain");
+        startActivity(sendIntent);
     }
 
     private void closeDrawer() {
@@ -285,7 +324,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onPostResume() {
         super.onPostResume();
-        loadMapFragment();
+//        if(checkLocationEnabledPermission())
+//        loadMapFragment();
     }
 
     @Override
@@ -352,7 +392,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void addLoginInfo(GoogleSignInAccount acct) {
-        // TODO : add Profile Picture
         SharedPreferences.Editor editor = mSharedPreferences.edit();
         editor.putBoolean(LOGGED_IN, true);
         if (acct.getDisplayName() != null)
@@ -403,6 +442,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void loadMapFragment() {
+        navigationView.getMenu().getItem(0).setChecked(true);
         if (!checkLocationEnabledPermission()) {
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_REQUEST_FINE_LOCATIONS);
         } else {

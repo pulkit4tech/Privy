@@ -4,11 +4,11 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_nearby_privy"
-            android:icon="@drawable/ic_menu_camera"
+            android:icon="@drawable/nearby_privy"
             android:title="@string/nav_nearby_privy" />
         <item
             android:id="@+id/nav_request_new"
-            android:icon="@drawable/ic_menu_gallery"
+            android:icon="@drawable/add_privy_2"
             android:title="@string/nav_add_privy" />
         <!--<item-->
             <!--android:id="@+id/nav_slideshow"-->
@@ -16,7 +16,7 @@
             <!--android:title="Slideshow" />-->
         <item
             android:id="@+id/nav_sign_in_out"
-            android:icon="@drawable/ic_menu_manage"
+            android:icon="@drawable/sign_in"
             android:title="@string/sign_in" />
     </group>
 

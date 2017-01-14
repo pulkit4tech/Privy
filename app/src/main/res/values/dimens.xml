@@ -9,4 +9,11 @@
     <dimen name="design_fab_image_size" tools:override="true">36dp</dimen>
     <dimen name="fab_margin_bottom">30sp</dimen>
     <dimen name="fab_margin_start">10sp</dimen>
+    <dimen name="profile_pic_width">80sp</dimen>
+    <dimen name="profile_pic_height">80sp</dimen>
+    <dimen name="card_view_margin">16sp</dimen>
+    <dimen name="card_view_elevation">10dp</dimen>
+    <dimen name="fab_elevation">5sp</dimen>
+    <dimen name="privy_detail_list_item_height">45dp</dimen>
+    <dimen name="card_view_radius">10dp</dimen>
 </resources>
