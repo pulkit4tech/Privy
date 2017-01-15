@@ -13,7 +13,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -145,12 +144,12 @@ public class PrivyMapsFragment extends Fragment implements OnMapReadyCallback {
         changeCamera(CameraUpdateFactory.newCameraPosition(MY_LOCATION_CAMERA_POS), new GoogleMap.CancelableCallback() {
             @Override
             public void onFinish() {
-                snackMsg("Animation Finished");
+                Log.d(DEBUG, "moveCameraToMyLocation: Camera Animation finished");
             }
 
             @Override
             public void onCancel() {
-                Toast.makeText(mContext, "Animation Canceled", Toast.LENGTH_SHORT).show();
+                Log.d(DEBUG, "moveCameraToMyLocation: Camera Animation Cancelled");
             }
         });
 
