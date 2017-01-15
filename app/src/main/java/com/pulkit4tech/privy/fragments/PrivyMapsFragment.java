@@ -40,6 +40,7 @@ public class PrivyMapsFragment extends Fragment implements OnMapReadyCallback {
     private Context mContext;
     private CameraPosition MY_LOCATION_CAMERA_POS;
     private HashMap<String, MarkerData> universalMarkers;
+    private LocationServices locationService;
 
     // My location
     private LocationData myLocationData;
@@ -119,7 +120,9 @@ public class PrivyMapsFragment extends Fragment implements OnMapReadyCallback {
     }
 
     private void getMyCurrentLocation() {
-        LocationServices locationService = new LocationServices(mContext);
+        if(locationService == null)
+            locationService = new LocationServices(mContext);
+
         myLocationData = locationService.getCurrentLocation();
         if (myLocationData != null) {
 

@@ -45,7 +45,7 @@ import com.pulkit4tech.privy.data.json.Location;
 import com.pulkit4tech.privy.data.json.PostPrivyRequest;
 import com.pulkit4tech.privy.fragments.PrivyMapsFragment;
 import com.pulkit4tech.privy.utilities.NetworkRequest;
-import com.pulkit4tech.privy.utilities.NoLocationPermission;
+import com.pulkit4tech.privy.fragments.NoLocationPermission;
 
 import java.util.ArrayList;
 
