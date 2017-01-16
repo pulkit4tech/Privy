@@ -222,7 +222,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         switch (requestCode) {
             case MY_PERMISSIONS_REQUEST_FINE_LOCATIONS:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    loadMapFragment();
+                    //loadMapFragment();
                     snackMsg(getString(R.string.location_permission_success));
                 } else {
                     loadFragment(new NoLocationPermission());
