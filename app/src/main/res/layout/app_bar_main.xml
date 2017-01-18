@@ -31,8 +31,10 @@
         android:layout_gravity="bottom|start"
         android:layout_marginBottom="@dimen/fab_margin_bottom"
         android:layout_marginStart="@dimen/fab_margin_start"
+        android:layout_marginLeft="@dimen/fab_margin_start"
         app:srcCompat="@drawable/google"
         app:backgroundTint="@android:color/white"
+        android:contentDescription="@string/sign_in"
         />
 
 </android.support.design.widget.CoordinatorLayout>

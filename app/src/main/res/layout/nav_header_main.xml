@@ -19,7 +19,7 @@
         android:layout_gravity="start"
         android:scaleType="fitStart"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
-
+        android:contentDescription="@string/profile_pic"
         app:srcCompat="@drawable/default_avatar" />
 
     <TextView
