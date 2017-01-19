@@ -129,7 +129,6 @@ public class PrivyMapsFragment extends Fragment implements OnMapReadyCallback, G
 //
 //        LatLng delhi2 = new LatLng(28.633511, 77.219444);
 //        mMap.addMarker(new MarkerOptions().position(delhi2).anchor(.5f, .5f).title("Test Marker in Home2").icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher)));
-
     }
 
     private void setUpMapInfo() {
@@ -209,6 +208,7 @@ public class PrivyMapsFragment extends Fragment implements OnMapReadyCallback, G
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
+        startLocationUpdates();
         myLocationData = com.google.android.gms.location.LocationServices.FusedLocationApi.getLastLocation(
                 mGoogleApiClient);
         if (myLocationData == null) {
@@ -218,8 +218,6 @@ public class PrivyMapsFragment extends Fragment implements OnMapReadyCallback, G
         } else {
             getMyCurrentLocation();
         }
-
-        startLocationUpdates();
     }
 
     private Location getCurrentLocation() {
@@ -241,7 +239,7 @@ public class PrivyMapsFragment extends Fragment implements OnMapReadyCallback, G
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        snackMsg("Can't connect to Google Api Client");
+        snackMsg(getString(R.string.google_api_client_connection_failed));
     }
 
 
@@ -290,4 +288,5 @@ public class PrivyMapsFragment extends Fragment implements OnMapReadyCallback, G
     public void onLocationChanged(Location location) {
         getMyCurrentLocation();
     }
+
 }
