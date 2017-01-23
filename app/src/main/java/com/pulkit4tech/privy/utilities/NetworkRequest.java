@@ -1,10 +1,15 @@
 package com.pulkit4tech.privy.utilities;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.app.LoaderManager;
+import android.content.CursorLoader;
+import android.content.Loader;
 import android.util.Log;
 import android.view.View;
 
@@ -26,6 +31,8 @@ import com.google.gson.GsonBuilder;
 import com.pulkit4tech.privy.PrivyDetailsActivity;
 import com.pulkit4tech.privy.R;
 import com.pulkit4tech.privy.data.json.GetPrivyResponse;
+import com.pulkit4tech.privy.data.json.Location;
+import com.pulkit4tech.privy.data.json.LocationData;
 import com.pulkit4tech.privy.data.json.MarkerData;
 import com.pulkit4tech.privy.data.json.PostPrivyRequest;
 import com.pulkit4tech.privy.data.json.PostPrivyResponse;
@@ -37,7 +44,7 @@ import java.util.HashMap;
 
 import static com.pulkit4tech.privy.constants.Constants.DEBUG;
 
-public class NetworkRequest {
+public class NetworkRequest implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private LatLng myLocation;
     private RequestQueue requestQueue;
@@ -111,8 +118,10 @@ public class NetworkRequest {
                     Log.e(DEBUG, post.toString());
                 }
             } else {
+                deleteDataLocally();
                 addMarkers(post);
             }
+            addMarkerListner();
         }
     };
 
@@ -122,8 +131,11 @@ public class NetworkRequest {
             BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE);
             Marker temp = mMap.addMarker(new MarkerOptions().position(new LatLng(data.getGeometry().getLocation().getLat(), data.getGeometry().getLocation().getLng())).title(data.getName()).icon(bitmapDescriptor));
             hm.put(temp.getId(), data);
+            storeDataLocally(data);
         }
+    }
 
+    private void addMarkerListner() {
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
@@ -137,11 +149,36 @@ public class NetworkRequest {
         });
     }
 
+    private void storeDataLocally(MarkerData data) {
+        ContentValues values = new ContentValues();
+        values.put(PrivyProvider.id, data.getPlaceid());
+        values.put(PrivyProvider.name, data.getName());
+        values.put(PrivyProvider.lat, data.getGeometry().getLocation().getLat());
+        values.put(PrivyProvider.lng, data.getGeometry().getLocation().getLng());
+        values.put(PrivyProvider.rating, data.getRating());
+        values.put(PrivyProvider.vicinity, data.getVicinity());
+        Uri uri = mContext.getContentResolver().insert(
+                PrivyProvider.CONTENT_URI,
+                values
+        );
+        Log.d(DEBUG, "Inserted to database : " + uri.toString());
+    }
+
+    private void deleteDataLocally() {
+        int del = mContext.getContentResolver().delete(
+                PrivyProvider.CONTENT_URI,
+                null,
+                null
+        );
+        Log.d(DEBUG, "Delete Rows : " + del);
+    }
+
     private Response.ErrorListener getErrorListner = new Response.ErrorListener() {
         @Override
         public void onErrorResponse(VolleyError error) {
             snackMsg(mContext.getString(R.string.network_error));
             Log.d(DEBUG, error.toString());
+            mContext.getLoaderManager().initLoader(1, null, NetworkRequest.this);
         }
     };
 
@@ -206,7 +243,7 @@ public class NetworkRequest {
         } catch (JSONException e) {
             Log.d(DEBUG, e.toString());
         }
-        Log.d(DEBUG, jsonObject.toString());
+
         return jsonObject;
     }
 
@@ -227,5 +264,49 @@ public class NetworkRequest {
             }
         });
         snackbar.show();
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        return new CursorLoader(mContext, Uri.parse(PrivyProvider.URL), null, null, null, null);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        cursor.moveToFirst();
+
+        while (!cursor.isAfterLast()) {
+            MarkerData data = new MarkerData();
+            setCursorData(cursor, data);
+            BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE);
+            Marker temp = mMap.addMarker(new MarkerOptions().position(new LatLng(data.getGeometry().getLocation().getLat(), data.getGeometry().getLocation().getLng())).title(data.getName()).icon(bitmapDescriptor));
+            hm.put(temp.getId(), data);
+
+            cursor.moveToNext();
+
+            Log.d(DEBUG, "Offline data : " + data);
+        }
+
+        addMarkerListner();
+    }
+
+    private void setCursorData(Cursor cursor, MarkerData data) {
+
+        data.setId(cursor.getString(cursor.getColumnIndex(PrivyProvider.id)));
+        data.setName(cursor.getString(cursor.getColumnIndex(PrivyProvider.name)));
+        LocationData geometry = new LocationData();
+        Location location = new Location();
+        location.setLat(cursor.getDouble(cursor.getColumnIndex(PrivyProvider.lat)));
+        location.setLng(cursor.getDouble(cursor.getColumnIndex(PrivyProvider.lng)));
+        geometry.setLocation(location);
+        data.setGeometry(geometry);
+        data.setRating(cursor.getFloat(cursor.getColumnIndex(PrivyProvider.rating)));
+        data.setVicinity(cursor.getString(cursor.getColumnIndex(PrivyProvider.vicinity)));
+
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        // TODO
     }
 }

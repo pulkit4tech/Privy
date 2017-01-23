@@ -49,8 +49,8 @@ public class PrivyDetailsActivity extends AppCompatActivity {
         setFab();
 
         data = retrieveData();
-        Log.d(DEBUG, data.toString());
         if (data != null) {
+            Log.d(DEBUG, data.toString());
             setData();
         }
 
@@ -87,8 +87,6 @@ public class PrivyDetailsActivity extends AppCompatActivity {
         } catch (Exception e) {
             Log.d(DEBUG, e.toString());
         }
-
-        Log.d(DEBUG, "Delete Request Json Body : " + jsonObject.toString());
         return jsonObject;
     }
 
@@ -116,7 +114,7 @@ public class PrivyDetailsActivity extends AppCompatActivity {
                 finish();
             } else {
                 Log.d(DEBUG, res.toString());
-                snackMsg(getString(R.string.delete_request_failed));
+                snackMsg(getString(R.string.delete_request_failed) + "Reason : " + res.getStatus());
             }
         }
     };
@@ -153,7 +151,8 @@ public class PrivyDetailsActivity extends AppCompatActivity {
     private void setToolBar() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Privy Details");
+        //noinspection ConstantConditions,ConstantConditions
+        getSupportActionBar().setTitle(R.string.toolbar_title_privy_details);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
     }
@@ -174,34 +173,34 @@ public class PrivyDetailsActivity extends AppCompatActivity {
 
     private String checkNameValue(String val) {
         if (val == null)
-            return "N/A";
+            return getString(R.string.n_a);
         return val;
     }
 
     private String checkVicinityValue(String vicinity) {
         if (vicinity == null)
-            return "N/A";
+            return getString(R.string.n_a);
 
         return vicinity;
     }
 
     private String checkRatingValue(float rating) {
         if (rating == 0)
-            return "N/A";
+            return getString(R.string.n_a);
 
         return String.format("%.2f", rating);
     }
 
     private String checkOpening(MarkerData.OpeningHours openingHours) {
         if (openingHours == null)
-            return "N/A";
+            return getString(R.string.n_a);
 
         return openingHours.isOpennow() ? "YES" : "NO";
     }
 
     private String checkGeoValue(LocationData geo) {
         if (geo == null)
-            return "N/A";
+            return getString(R.string.n_a);
         return "Lat : " + String.format("%.2f", geo.getLocation().getLat()) + " Lng : " + String.format("%.2f", geo.getLocation().getLng());
     }
 

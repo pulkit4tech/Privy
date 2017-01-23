@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Privy</string>
-    <string name="title_activity_privy_maps">Nearby Privy\'s</string>
     <string name="request_api">maps.googleapis.com</string>
     <string name="radius">1000</string>
     <string name="error_retrieving_data_msg">Some error while retrieving data!!</string>
@@ -8,7 +7,6 @@
     <string name="network_error">Sorry!! Network Error..</string>
     <string name="navigation_drawer_open">Open Navigation Drawer</string>
     <string name="navigation_drawer_close">Close Navigation Drawer</string>
-    <string name="action_settings">Settings</string>
     <string name="sign_in">Sign In</string>
     <string name="sign_out">Sign Out</string>
     <string name="sign_out_msg">Signed Out!!</string>
@@ -34,6 +32,27 @@
     <string name="feedback_subject">Feedback</string>
     <string name="send_feedback_msg">Send Feedback:</string>
     <string name="enable_gps_msg">Please enable GPS for better results.</string>
-    <string name="gps_enable_request_success">Thank you for enabling gps.</string>
     <string name="turn_on">TURN ON</string>
+    <string name="profile_pic">Profile Pic</string>
+    <string name="name">Name :</string>
+    <string name="geometry">Geometry :</string>
+    <string name="open_now">Open Now :</string>
+    <string name="vicinity">Vicinity :</string>
+    <string name="ratings">Ratings :</string>
+    <string name="directions">Directions</string>
+    <string name="delete">Delete</string>
+    <string name="error_message">Error Message!!</string>
+    <string name="communicate">Communicate</string>
+    <string name="share">Share</string>
+    <string name="feedback">Feedback</string>
+    <string name="toilet_name_default">Public Toilet</string>
+    <string name="types_default">establishment</string>
+    <string name="language_default">en</string>
+    <string name="toolbar_title_privy_details">Privy Details</string>
+    <string name="google_api_client_connection_failed">Can\'t connect to Google Api Client</string>
+    <string name="appwidget_text">Privy Near Me</string>
+    <string name="add_widget">Add widget</string>
+    <string name="widget_privy_nearby">Privy Nearby</string>
+    <string name="latitude">Latitude</string>
+    <string name="longitude">Longitude</string>
 </resources>
