@@ -290,6 +290,7 @@ public class PrivyMapsFragment extends Fragment implements OnMapReadyCallback, G
 
     @Override
     public void onLocationChanged(Location location) {
+        myLocationData = location;
         getMyCurrentLocation();
     }
 
