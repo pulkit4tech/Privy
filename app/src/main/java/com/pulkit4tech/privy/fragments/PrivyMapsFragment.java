@@ -52,7 +52,7 @@ public class PrivyMapsFragment extends Fragment implements OnMapReadyCallback, G
     private LocationRequest mLocationRequest;
     private static int UPDATE_INTERVAL = 10000; // 10 sec
     private static int FATEST_INTERVAL = 5000; // 5 sec
-    private static int DISPLACEMENT = 10; // 10 meters
+    private static int DISPLACEMENT = 50; // 50 meters
 
     // My location
     private Location myLocationData;
@@ -156,10 +156,14 @@ public class PrivyMapsFragment extends Fragment implements OnMapReadyCallback, G
         myLocationData = getCurrentLocation();
         if (myLocationData != null) {
 
+            float bearing = 0;
+            if(myLocationData.hasBearing())
+                bearing = myLocationData.getBearing();
+
             MY_LOCATION_CAMERA_POS = new CameraPosition.Builder()
                     .target(new LatLng(myLocationData.getLatitude(), myLocationData.getLongitude()))
                     .zoom(15.0f)
-                    .bearing(0)
+                    .bearing(bearing)
                     .tilt(25)
                     .build();
 
@@ -270,7 +274,7 @@ public class PrivyMapsFragment extends Fragment implements OnMapReadyCallback, G
         mLocationRequest.setInterval(UPDATE_INTERVAL);
         mLocationRequest.setFastestInterval(FATEST_INTERVAL);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        mLocationRequest.setSmallestDisplacement(DISPLACEMENT); // 10 meters
+        mLocationRequest.setSmallestDisplacement(DISPLACEMENT); // 50 meters
     }
 
     private void startLocationUpdates() {
@@ -286,6 +290,7 @@ public class PrivyMapsFragment extends Fragment implements OnMapReadyCallback, G
 
     @Override
     public void onLocationChanged(Location location) {
+        myLocationData = location;
         getMyCurrentLocation();
     }
 
