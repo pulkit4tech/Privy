@@ -4,7 +4,7 @@ sudo: false
 
 notifications:
     email:
-        - pulkit4tech@gmail.com
+        - privyfinder@gmail.com
 
 env:
     matrix:
