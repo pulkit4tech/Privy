@@ -4,7 +4,7 @@ sudo: false
 
 notifications:
     email:
-        - xyz@example.com
+        - pulkit4tech@gmail.com
 
 env:
     matrix:
