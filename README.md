@@ -29,6 +29,7 @@ Contributing Guidelines
 MADE WITH ❤ BY
 --------------
 [Pulkit Bhatia](https://github.com/pulkit4tech)
+
 License
 -------
 
