@@ -45,13 +45,12 @@ licenses:
     - 'google-gdk-license-.+'
 
 before_script:
-    - chmod 755 gradlew      #Grand permissions
+    - chmod +x gradlew      #Grand permissions
     - android list targets
     - echo no | android create avd --force --name test --target $ANDROID_TARGET --abi $ANDROID_ABI    #Create AVD for given api
     - emulator -avd test -no-skin -no-audio -no-window &    #Start emulator
 
 script:
-    - ./gradlew build jacocoTestReport assembleAndroidTest
     - echo "Travis branch is $TRAVIS_BRANCH"
     - echo "Travis branch is in pull request $TRAVIS_PULL+REQUEST"
     - android-wait-for-emulator
