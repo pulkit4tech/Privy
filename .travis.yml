@@ -4,7 +4,7 @@ sudo: false
 
 notifications:
     email:
-        - pulkit4tech@gmail.com
+        - privyfinder@gmail.com
 
 env:
     matrix:
@@ -62,6 +62,7 @@ before_install:
     - pip install --user codecov    #Install codecov
 
 after_success:
-    - codecov                       #Run codecov
+    - codecov
+    - bash <(curl -s https://codecov.io/bash)                    #Run codecov
 
 after_failure: "cat $TRAVIS_BUILD_DIR/app/build/outputs/lint-results-debug.xml"
