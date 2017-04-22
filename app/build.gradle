@@ -1,6 +1,9 @@
 apply plugin: 'com.android.application'
 
 android {
+    lintOptions {
+          abortOnError false
+      }
     signingConfigs {
         config {
             keyAlias 'MyAndroidKey'
