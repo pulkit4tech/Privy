@@ -37,4 +37,12 @@
         android:contentDescription="@string/sign_in"
         />
 
+    <com.google.android.gms.ads.AdView
+        android:id="@+id/bannerAdView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        app:adSize="BANNER"
+        app:adUnitId="@string/ad_id_banner" />
+
 </android.support.design.widget.CoordinatorLayout>

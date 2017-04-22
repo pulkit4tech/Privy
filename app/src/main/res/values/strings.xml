@@ -55,4 +55,6 @@
     <string name="widget_privy_nearby">Privy Nearby</string>
     <string name="latitude">Latitude</string>
     <string name="longitude">Longitude</string>
+    <string name="ad_id_interstitial">ca-app-pub-1505108934613970/3055429642</string>
+    <string name="ad_id_banner">ca-app-pub-1505108934613970/1020293243</string>
 </resources>

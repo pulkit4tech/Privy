@@ -19,6 +19,9 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
 import com.google.gson.GsonBuilder;
 import com.pulkit4tech.privy.data.PostPrivyDeleteRequest;
 import com.pulkit4tech.privy.data.json.LocationData;
@@ -40,11 +43,13 @@ public class PrivyDetailsActivity extends AppCompatActivity {
     private String DELETE = "delete";
     private String JSON = "json";
     private String OK = "OK";
+    private InterstitialAd interstitialAd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_privy_details);
+        setAddMob();
         setToolBar();
         setFab();
 
@@ -55,6 +60,47 @@ public class PrivyDetailsActivity extends AppCompatActivity {
         }
 
         setDelete();
+    }
+
+    private void setAddMob() {
+        if(interstitialAd==null) {
+            interstitialAd = new InterstitialAd(this);
+            interstitialAd.setAdUnitId(getString(R.string.ad_id_interstitial));
+            Log.d(DEBUG, "initialize InterstitialAd: " + interstitialAd);
+        }
+        interstitialAd.loadAd(new AdRequest.Builder().build());
+        interstitialAd.setAdListener(new AdListener() {
+            public void onAdLoaded() {
+                Log.d(DEBUG, "InterstitialAd loaded");
+                displayInterstitial();
+            }
+
+            @Override
+            public void onAdClosed() {
+                super.onAdClosed();
+            }
+
+            @Override
+            public void onAdFailedToLoad(int i) {
+                super.onAdFailedToLoad(i);
+            }
+
+            @Override
+            public void onAdLeftApplication() {
+                super.onAdLeftApplication();
+            }
+
+            @Override
+            public void onAdOpened() {
+                super.onAdOpened();
+            }
+        });
+    }
+
+    private void displayInterstitial() {
+        if (interstitialAd.isLoaded()) {
+            interstitialAd.show();
+        }
     }
 
     private void setDelete() {

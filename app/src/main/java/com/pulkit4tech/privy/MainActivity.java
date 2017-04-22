@@ -31,6 +31,8 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -69,6 +71,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private String LOGGED_IN = "logged_in";
     private ImageView profileImg;
     private TextView userName, emailId;
+    private AdView bannerAdView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,6 +93,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void setUpInfo() {
+        setAddmob();
         setGoogleApiClientInfo();
         setUpFab();
         setUpNavigationDrawer();
@@ -98,6 +102,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             fab.hide();
         }
     }
+
+    private void setAddmob() {
+
+        bannerAdView = (AdView) findViewById(R.id.bannerAdView);
+        bannerAdView.loadAd(new AdRequest.Builder().build());
+
+    }
+
+
 
     private void setUpNavigationDrawer() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
