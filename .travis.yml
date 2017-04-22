@@ -59,6 +59,7 @@ script:
     - ./gradlew connectedCheck -PdisablePreDex --stacktrace
 
 before_install:
+    - pip install --upgrade pip
     - pip install --user codecov    #Install codecov
 
 after_success:
