@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Privy</string>
     <string name="request_api">maps.googleapis.com</string>
-    <string name="radius">1000</string>
+    <string name="radius">5000</string>
     <string name="error_retrieving_data_msg">Some error while retrieving data!!</string>
     <string name="no_result_msg">Sorry No privy\'s found. Please help community and add one</string>
     <string name="network_error">Sorry!! Network Error..</string>

@@ -56,9 +56,9 @@ public class NetworkRequest implements LoaderManager.LoaderCallbacks<Cursor> {
     private String LOCATION = "location";
     private String NAME_KEY = "name";
     private String NAME_VALUE = "toilet";
-    private String RADIUS = "radius";
-    //    private String RANKBY = "rankby";
-//    private String DISTANCE = "distance";
+//    private String RADIUS = "radius";
+    private String RANKBY = "rankby";
+    private String DISTANCE = "distance";
     private String GOOGLE_MAP_API_KEY = "key";
     private String MAPS = "maps";
     private String API = "api";
@@ -193,8 +193,8 @@ public class NetworkRequest implements LoaderManager.LoaderCallbacks<Cursor> {
                 .appendPath(JSON)
                 .encodedQuery(LOCATION + "=" + String.format("%f,%f", myLocation.latitude, myLocation.longitude))
                 .appendQueryParameter(NAME_KEY, NAME_VALUE)
-                //   .appendQueryParameter(RANKBY,DISTANCE)
-                .appendQueryParameter(RADIUS, mContext.getString(R.string.radius))
+                .appendQueryParameter(RANKBY,DISTANCE)
+             //   .appendQueryParameter(RADIUS, mContext.getString(R.string.radius))
                 .appendQueryParameter(GOOGLE_MAP_API_KEY, mContext.getString(R.string.google_maps_key));
 
         return builder.build().toString();
