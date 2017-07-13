@@ -368,7 +368,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void handleSignInResult(GoogleSignInResult result) {
-        Log.d(DEBUG, "handleSignInResult:" + result.isSuccess());
+        Log.d(DEBUG, "handleSignInResult:" + result.isSuccess() + " status code: " + result.getStatus().getStatusCode());
         if (result.isSuccess()) {
             // Signed in successfully, show authenticated UI.
             GoogleSignInAccount acct = result.getSignInAccount();

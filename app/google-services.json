@@ -1,33 +1,33 @@
 {
   "project_info": {
-    "project_number": "203008384222",
-    "project_id": "privy-154513"
+    "project_number": "292815089641",
+    "project_id": "privy-1482518364072"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:203008384222:android:ae185500677abe13",
+        "mobilesdk_app_id": "1:292815089641:android:ae185500677abe13",
         "android_client_info": {
           "package_name": "com.pulkit4tech.privy"
         }
       },
       "oauth_client": [
         {
-          "client_id": "203008384222-oh1nnkreep3i88nbsj72be32ujmr56qs.apps.googleusercontent.com",
+          "client_id": "292815089641-fq076qmg9cun94tce2pqksdd9pv6lvr9.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "292815089641-j9d18quonn3sibj33b7lgf32busj9ivk.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.pulkit4tech.privy",
-            "certificate_hash": "DDCEF282F60C4E45E0FC7D575AA76E6D9C214000"
+            "certificate_hash": "933bf3a7e5ce04fbac3ec47862b1577ab57169af"
           }
-        },
-        {
-          "client_id": "203008384222-5fvdfg6mt939sb650t6ukcde442jmrnl.apps.googleusercontent.com",
-          "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBcvpPGh9Ba9sOEg1YCyhA6dZ-plgePfeI"
+          "current_key": "AIzaSyBH14Ck4qTzCiN7BE79WepPlnDM31j2L50"
         }
       ],
       "services": {
