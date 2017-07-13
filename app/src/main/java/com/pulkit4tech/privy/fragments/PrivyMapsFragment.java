@@ -53,6 +53,7 @@ public class PrivyMapsFragment extends Fragment implements OnMapReadyCallback, G
     private static int UPDATE_INTERVAL = 10000; // 10 sec
     private static int FATEST_INTERVAL = 5000; // 5 sec
     private static int DISPLACEMENT = 50; // 50 meters
+    private float zoom = 10;
 
     // My location
     private Location myLocationData;
@@ -125,7 +126,7 @@ public class PrivyMapsFragment extends Fragment implements OnMapReadyCallback, G
         // Add a test marker in Delhi and move the camera
 //        LatLng delhi = new LatLng(28.633011, 77.219373);
 //        mMap.addMarker(new MarkerOptions().position(delhi).anchor(.5f, .5f).title("Marker in Home"));
-//        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(delhi, 15.0f));
+//        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(delhi, 10.0f));
 //
 //        LatLng delhi2 = new LatLng(28.633511, 77.219444);
 //        mMap.addMarker(new MarkerOptions().position(delhi2).anchor(.5f, .5f).title("Test Marker in Home2").icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher)));
@@ -145,11 +146,19 @@ public class PrivyMapsFragment extends Fragment implements OnMapReadyCallback, G
         mMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
             @Override
             public boolean onMyLocationButtonClick() {
+                updateZoom();
                 getMyCurrentLocation();
                 return true;
             }
         });
         getMyCurrentLocation();
+    }
+
+    private void updateZoom() {
+        if(zoom == 20.0)
+            zoom = 10;
+        else
+            zoom += 5;
     }
 
     private void getMyCurrentLocation() {
@@ -162,7 +171,7 @@ public class PrivyMapsFragment extends Fragment implements OnMapReadyCallback, G
 
             MY_LOCATION_CAMERA_POS = new CameraPosition.Builder()
                     .target(new LatLng(myLocationData.getLatitude(), myLocationData.getLongitude()))
-                    .zoom(15.0f)
+                    .zoom(zoom)
                     .bearing(bearing)
                     .tilt(25)
                     .build();
